@@ -1,0 +1,25 @@
+/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/ 
+.customBar::-webkit-scrollbar {
+  width: 5px;
+  height: 9px;
+}
+.customBar::-webkit-scrollbar-track {
+  background-color: transparent;
+  -webkit-border-radius: 2em;
+  -moz-border-radius: 2em;
+  border-radius: 2em
+}
+.customBar::-webkit-scrollbar-thumb {
+  background-color: rgba(64,158,255,0.8);
+  background-image: -webkit-linear-gradient(45deg,rgba(255,255,255,.4) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.4) 50%,rgba(255,255,255,.4) 75%,transparent 75%,transparent);
+  -webkit-border-radius: 2em;
+  -moz-border-radius: 2em;
+  border-radius: 2em
+}
+.customBar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(64,158,255,1);
+}
+
+@base-background: rgb(42, 56, 79);  // 背景色
+@header-height: 70px;   // 框架头部高度
+@sidebar-width: 100px;  // 框架侧边栏宽度
