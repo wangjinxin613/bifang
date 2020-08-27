@@ -1,5 +1,5 @@
 <template>
-  <div class="content">
+  <div class="mamage-content">
     <Header></Header>
     <Sidebar></Sidebar>
     <div class="content-view">
@@ -25,7 +25,7 @@ export default class MyComponent extends Vue {
 
 <style lang="less" scoped>
 
-.content{
+.mamage-content{
   background-color: @base-background;
     min-height: 100vh;
 }

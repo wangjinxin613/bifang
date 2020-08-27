@@ -1,3 +1,6 @@
+/**
+ * 这里是一些自定义的svg图标
+ */
 import { Vue, Component } from 'vue-property-decorator'
 
 export default Vue.extend({

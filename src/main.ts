@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import './core/lazy_use'
-
+import "vue-tsx-support/enable-check";
 
 Vue.config.productionTip = false
 
