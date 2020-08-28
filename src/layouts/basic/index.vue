@@ -31,13 +31,13 @@ export default class MyComponent extends Vue {
 }
 .content-view{
   position: fixed;
-  width: 100%;
+  width: calc(100% - @sidebar-width);
   top: @header-height;
   left: @sidebar-width;
   background-color: rgba(245, 245, 245, 1);
   min-height: 100%;
   box-sizing: border-box;
-  border-radius: 10px;
+  border-radius: 10px 0 0 0;
   padding: 15px 15px;
 }
 </style>

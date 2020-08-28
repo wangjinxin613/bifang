@@ -11,7 +11,7 @@ export default class extends tsx.Component<any> {
     return (
       <div class="listView">
         <div class="top-view">
-          <a-menu mode="horizontal">
+          <a-menu mode="horizontal" style="width: 180px">
             <a-menu-item >全部</a-menu-item>
           </a-menu>
           <div class="right-view">
