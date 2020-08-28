@@ -16,11 +16,11 @@ export const templateType: any = {
   },
   list: {   // 列表型
     name: 'list',
-    component: () => import('../layouts/template/listView')
+    component: () => import('../layouts/template/list')
   },
   form: {
     name: 'form', // 表单型
-    component: () => import('../layouts/template/listView')
+    component: () => import('../layouts/template/list/index')
   }
 };
 

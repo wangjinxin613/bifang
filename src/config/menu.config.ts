@@ -54,6 +54,12 @@ export default [
       {
         path: '/system/approve',
         name: '审批管理',
+        children: [
+          {
+            path: '/system/approve/list',
+            name: '全部',
+          }
+        ]
       }
     ]
   }

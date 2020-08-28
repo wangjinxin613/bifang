@@ -12,6 +12,7 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": ".",
+    "allowJs": true,
     "types": [
       "webpack-env",
       "jest"
@@ -34,6 +35,9 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
+    "tests/**/*.tsx", 
+    "src/components/Table/index.js",
+    "src",
     "tests/**/*.tsx"
-  ],
+  ]
 }

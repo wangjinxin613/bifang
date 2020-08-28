@@ -1,0 +1,78 @@
+.listView{
+  padding: 10px;
+  box-sizing: border-box;
+
+  /deep/ .ant-menu{
+    background: transparent;
+    width: auto;
+    border: 0;
+    line-height: 30px;
+  }
+
+  .top-view{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    box-shadow: 0 1px 2px #eee;
+    padding-bottom: 12px;
+  }
+
+  /deep/ .ant-btn{
+    margin-left: 20px;
+    font-size: 13px !important;
+    box-shadow: 2px 2px 5px rgba(102, 102, 102, 0.349019607843137);
+    padding: 0 20px;
+    height: 30px;
+    line-height: 30px;
+  }
+
+  
+  /deep/ .createBtn{
+    background-color: rgba(255, 153, 102, 1) !important;
+    border-color: rgba(255, 153, 102, 1);
+    padding: 0 40px;
+  }
+
+  .searchView{
+    margin-top: 15px;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .searchView .single, .searchView .search-btn{
+    margin-bottom: 10px;
+    flex: 0 0 20%;
+    min-width: 260px;
+  }
+  .searchView .single {
+    padding-right: 20px;
+    display: flex;
+    align-items: center;
+  }
+  .searchView .single .label{
+    font-size: 13px;
+    word-break:keep-all;   
+    color: #666666;
+    text-align: center;
+  }
+ 
+  /deep/ .ant-input{
+    font-size: 13px;
+    height: 30px;
+    line-height: 30px;
+    width: 100%;
+  }
+
+  .search-btn{
+    text-align: right;
+    margin-left:auto !important;
+  }
+
+  /deep/ .ant-table-thead > tr > th,
+  .ant-table-placeholder{
+    background: transparent;
+  }
+}
