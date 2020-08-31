@@ -5,6 +5,8 @@ import store from './store'
 import './core/lazy_use'
 import "vue-tsx-support/enable-check";
 
+import './mock';
+
 Vue.config.productionTip = false
 
 new Vue({

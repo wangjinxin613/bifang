@@ -30,12 +30,12 @@ export default class MyComponent extends Vue {
     min-height: 100vh;
 }
 .content-view{
-  position: fixed;
+  position: absolute;
   width: calc(100% - @sidebar-width);
   top: @header-height;
   left: @sidebar-width;
   background-color: rgba(245, 245, 245, 1);
-  min-height: 100%;
+  min-height: calc(100% - @header-height);
   box-sizing: border-box;
   border-radius: 10px 0 0 0;
   padding: 15px 15px;

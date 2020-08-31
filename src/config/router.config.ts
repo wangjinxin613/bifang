@@ -85,7 +85,7 @@ export const manageRouter: Array<RouteConfig> = [
                 path: '/system/member/list',
                 name: '全部',
                 meta: { template: templateType.default.name },
-                component: () => import('../views/member/list.vue'),
+                component: () => import('../views/system/member/list.vue'),
               }
             ]
           },
@@ -104,7 +104,13 @@ export const manageRouter: Array<RouteConfig> = [
                 path: '/system/approve/list',
                 name: '全部',
                 meta: { template: templateType.list.name },
-                component: () => import('../views/approve/list'),
+                component: () => import('../views/system/approve/list'),
+              },
+              {
+                path: '/system/approve/detail',
+                name: '审批流程',
+                meta: { template: templateType.list.name },
+                component: () => import('../views/system/approve/detail'),
               }
             ]
           }

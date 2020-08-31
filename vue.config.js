@@ -16,7 +16,10 @@ const vueConfig = {
   css: {
     loaderOptions: {
       less: {
-        javascriptEnabled: true
+        javascriptEnabled: true,
+        lessOptions: {
+          javascriptEnabled: true,
+        },
       }
     }
   },

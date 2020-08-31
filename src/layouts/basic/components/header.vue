@@ -50,6 +50,7 @@ header{
   position: fixed;
   top: 0;
   width: 100%;
+  z-index: 1000;
 
   & .left-view, & .right-view{
     display: flex;

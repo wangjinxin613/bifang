@@ -23,8 +23,8 @@
     font-size: 13px !important;
     box-shadow: 2px 2px 5px rgba(102, 102, 102, 0.349019607843137);
     padding: 0 20px;
-    height: 30px;
-    line-height: 30px;
+    // height: 30px;
+    // line-height: 30px;
   }
 
   
@@ -35,8 +35,8 @@
   }
 
   .searchView{
-    margin-top: 15px;
-    margin-bottom: 5px;
+    margin-top: 20px;
+    margin-bottom: 15px;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
@@ -61,8 +61,8 @@
  
   /deep/ .ant-input{
     font-size: 13px;
-    height: 30px;
-    line-height: 30px;
+    // height: 30px;
+    // line-height: 30px;
     width: 100%;
   }
 
@@ -74,5 +74,40 @@
   /deep/ .ant-table-thead > tr > th,
   .ant-table-placeholder{
     background: transparent;
+  }
+
+
+  .action{
+    font-size: 20px;
+
+    & .see {
+      color: @primary-color;
+      cursor: pointer;
+      margin-right: 2px;
+    }
+
+    & .delete {
+      color: @error-color;
+      cursor: pointer;
+      margin-left: 2px;
+    }
+  }
+
+  /deep/ .ant-pagination{
+    margin-top: 40px;
+  }
+
+  
+  /deep/ .ant-pagination-prev .ant-pagination-item-link, .ant-pagination-next .ant-pagination-item-link,
+  /deep/ .ant-pagination-item,
+  /deep/ .ant-pagination-item-active,
+  /deep/ .ant-pagination .ant-select-selection
+  {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+
+  /deep/ .ant-table-tbody > tr > td {
+    border-color:  rgba(238, 238, 238, 1);
   }
 }
