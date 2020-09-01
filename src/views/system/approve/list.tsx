@@ -27,7 +27,7 @@ export default class extends tsx.Component<Vue> {
 
   // 字段审批流的模板
   private get flowTemplate() {
-    const list = [0, 1, 2, 3, 4, 8, 9 ];
+    const list = [0, 1, 2, 3, 4, 8, 9];
     return (
       <div class="flowList">
         {list.map((item, index) => {
@@ -36,13 +36,33 @@ export default class extends tsx.Component<Vue> {
               <div class="single">
                 <div class="role">销售（发起人）</div>
                 <div class="next-icon">
-                  { index !== list.length - 1 ? <img src={require('@/assets/img/flow-next.png')} /> : '' }
+                  {index !== list.length - 1 ? <img src={require('@/assets/img/flow-next.png')} /> : ''}
                 </div>
               </div>
             </div>
           )
         })}
       </div>
+    )
+  }
+
+  // 自定义新建按钮
+  public get customCreateBtn() {
+    return (
+      <a-dropdown trigger={['click']}>
+        <a-button type="primary" class="createBtn ant-dropdown-link" icon="file-add">
+          新建
+        </a-button>
+        <a-menu slot="overlay">
+          <a-menu-item key="0">
+            <router-link to="form/create">创建表单审批流</router-link>
+          </a-menu-item>
+          {/* <a-menu-divider /> */}
+          <a-menu-item key="1">
+            <router-link  to="delForm/create">删除表单审批流</router-link>
+          </a-menu-item>
+        </a-menu>
+      </a-dropdown>
     )
   }
 
@@ -54,7 +74,7 @@ export default class extends tsx.Component<Vue> {
     },
     {
       title: '审批流类型',
-      dataIndex: 'name',
+      dataIndex: 'name1',
       width: 150
     },
     {
@@ -71,7 +91,7 @@ export default class extends tsx.Component<Vue> {
       scopedSlots: { customRender: 'action' },
       see: (record: any) => {
         this.$router.push({
-          path: 'detail?id=' + record.id
+          path: 'detail/' + record.id
         })
       },
       del: true

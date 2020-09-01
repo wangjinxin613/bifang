@@ -5,7 +5,6 @@ import { STable } from '@/components';
 import { formItem } from '@/utils/interface'
 import menuConfig from "@/config/menu.config";
 import { RouteConfig } from "vue-router";
-import { FormItem } from 'ant-design-vue/types/form/form-item';
 
 @Component({
   components: { stable: STable }
@@ -18,6 +17,7 @@ export default class extends tsx.Component<any> {
   public searchForm = [];  // 搜索表单
   public columns: Array<any> = []; // 表格项
   public queryParam = {};  // 检索字段
+  public customCreateBtn = '';  // 自定义新建按钮
 
   // 三级菜单列表
   get menus() {
@@ -90,12 +90,7 @@ export default class extends tsx.Component<any> {
     }
     this.searchSubmit();
   }
-
-  seeClick(record: any) {
-    this.columns[this.columns.length - 1].see(record);
-  // console.log(record);
-  }
-
+  
   mounted() {
     var { content } = this;
     // 操作的宽度固定 140
@@ -104,7 +99,8 @@ export default class extends tsx.Component<any> {
     }
     Object.assign(this, {
       searchForm: content.searchForm ?? [],
-      columns: content.columns ?? []
+      columns: content.columns ?? [],
+      customCreateBtn: content.customCreateBtn ?? ''
     })
   }
 
@@ -155,9 +151,15 @@ export default class extends tsx.Component<any> {
             }
           </a-menu>
           <div class="right-view">
-            <a-button type="primary" class="createBtn" icon="file-add">
-              新建
-            </a-button>
+            <router-link to="form/create">
+              {
+                this.customCreateBtn == '' ? (
+                  <a-button type="primary" class="createBtn" icon="file-add">
+                    新建
+                  </a-button>
+                ) : this.customCreateBtn
+              }
+            </router-link>
             <a-button type="primary" icon="export">
               导出
             </a-button>
@@ -172,7 +174,7 @@ export default class extends tsx.Component<any> {
             this.searchForm.map((item: formItem, index) => {
               let searchFrom;
               if (item.type === 'input') {
-                searchFrom = <a-input placeholder="请输入" size="default" />
+                searchFrom = <a-input placeholder="请输入" size="default"  v-model={item.value}/>
               } else if (item.type == 'select') {
                 searchFrom = (
                   <a-select v-model={item.value} placeholder="请选择" default-value="0">
@@ -213,7 +215,7 @@ export default class extends tsx.Component<any> {
           scopedSlots={{
             action: (props: any, record: any) => {
               return <span class="action">
-                <a-icon type="unordered-list" class="see" onClick={this.columns[this.columns.length - 1].see.bind(this, record) } />
+                <a-icon type="unordered-list" class="see" onClick={this.columns[this.columns.length - 1].see.bind(this, record)} />
                 <a-divider type="vertical" />
                 <a-popconfirm title="确定删除这条记录吗？" okText="确定" cancelText="取消" placement="right">
                   <a-icon type="delete" class="delete" />

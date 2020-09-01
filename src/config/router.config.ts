@@ -20,7 +20,7 @@ export const templateType: any = {
   },
   form: {
     name: 'form', // 表单型
-    component: () => import('../layouts/template/list/index')
+    component: () => import('../layouts/template/form')
   }
 };
 
@@ -107,10 +107,22 @@ export const manageRouter: Array<RouteConfig> = [
                 component: () => import('../views/system/approve/list'),
               },
               {
-                path: '/system/approve/detail',
-                name: '审批流程',
+                path: '/system/approve/detail/:id',
+                name: '查看审批流程',
                 meta: { template: templateType.list.name },
                 component: () => import('../views/system/approve/detail'),
+              },
+              {
+                path: '/system/approve/form/:id',
+                name: '创建表单审批流',
+                meta: { template: templateType.form.name },
+                component: () => import('../views/system/approve/form'),
+              },
+              {
+                path: '/system/approve/delForm/:id',
+                name: '删除表单审批流',
+                meta: { template: templateType.form.name },
+                component: () => import('../views/system/approve/delForm'),
               }
             ]
           }
