@@ -4,18 +4,30 @@ import { formItem } from '@/utils/interface'
 import approveSetting from '@/components/ApproveSetting/ApproveSetting';
 import { list } from '@/api/approve';
 import './style.less';
+import { approveSettingItem } from '@/utils/interface'
 
 @Component({
-  components: { approveSetting }
+  components: { approveSetting },
 })
 export default class extends tsx.Component<Vue> {
+
+  public list: Array<approveSettingItem> = [{}];
+  public handleSync(key: any, value: any) {
+    this.$set(this, key, value)
+    console.log(key,value);
+    this.$forceUpdate()
+  }
+
+  protected mounted() {
+   
+  }
   
   private get customerRender() {
     return (
       <div style="display: flex">
         <div class="label" style="padding-left: 20px">审批流设置</div>
         <div class="right-view" style="margin-left: 30px">
-          <approveSetting></approveSetting>
+          <approveSetting flowList={ this.list } on={{ ['update:flowList']: this.handleSync.bind(this, 'list') }} ></approveSetting>
         </div>
       </div>
     )

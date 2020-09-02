@@ -9,6 +9,7 @@
     margin-top: 15px;
     margin-bottom: 15px;
     align-items: center;
+    width: 100%;
 
     & .box{
       width: 380px;
@@ -69,6 +70,7 @@
 
   & .message-view{
     margin-left: 10px;
+    flex: 1;
 
     & .notice{
       font-size: 12px;
@@ -103,7 +105,7 @@
   & .box-single{
     color: @warning-color;
 
-    &:first-of-type, 
+    &:first-of-type,
     &:first-of-type .message .text span
     {
       color: @primary-color;
@@ -119,14 +121,14 @@
       }
     } 
 
-    &:last-of-type, 
-    &:last-of-type .message .text span
+    &.last,
+    &.last .message .text span
     {
-      color: @error-color;
+      color: @error-color !important;
       
       .box{
-        background: url(../../../assets/img/box3.png)  no-repeat;
-        background-size: 100% 100%;
+        background: url(../../../assets/img/box3.png)  no-repeat  !important;
+        background-size: 100% 100%  !important;
       }
     } 
   }

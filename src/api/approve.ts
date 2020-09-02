@@ -3,7 +3,7 @@ import {
 } from '@/utils/request'
 
 export const api = {
-  list: '/approve/list',
+  list: '/activity/getApproveList',
 }
 
 export function list(parameter?: Object) {

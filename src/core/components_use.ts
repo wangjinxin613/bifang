@@ -44,7 +44,8 @@ import {
   Skeleton,
   Popconfirm,
   message,
-  ConfigProvider 
+  ConfigProvider,
+  FormModel
 } from 'ant-design-vue'
 
 Vue.use(LocaleProvider)
@@ -85,6 +86,7 @@ Vue.use(Progress)
 Vue.use(Skeleton)
 Vue.use(Popconfirm)
 Vue.use(ConfigProvider)
+Vue.use(FormModel)
 
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = message

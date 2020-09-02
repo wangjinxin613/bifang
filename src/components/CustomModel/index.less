@@ -1,0 +1,105 @@
+.model {
+  &.blue, & .blue{
+    color: @primary-color;
+    & .ant-modal-header{
+      background: linear-gradient(90deg, rgba(72, 144, 247, 1) 0%, rgba(72, 144, 247, 1) 0%, rgba(188, 214, 252, 1) 100%, rgba(188, 214, 252, 1) 100%);
+    }
+  }
+  &.orange, & .orange{
+    color: @warning-color;
+    & .ant-modal-header{
+      background: linear-gradient(90deg, rgba(255, 153, 102, 1) 0%, rgba(255, 153, 102, 1) 0%, rgba(255, 215, 196, 1) 100%, rgba(255, 215, 196, 1) 100%);
+    }
+  }
+  &.pink,& .pink{
+    color: @error-color;
+    & .ant-modal-header{
+      background: linear-gradient(90deg, rgba(255, 121, 121, 1) 0%, rgba(255, 121, 121, 1) 0%, rgba(255, 208, 208, 1) 100%, rgba(255, 208, 208, 1) 100%);
+    }
+  }
+
+  .ant-modal-header{
+    border: 0;
+    border-radius: 0;
+  }
+
+  .ant-modal-content{
+    // border:1px solid#4890F7;
+    border-radius: 1px;
+    box-sizing: border-box;
+  }
+  
+  
+  .ant-modal-title {
+    color: #fff;
+  }
+  
+  .formItem{
+    width: 100%;
+    margin: 0 auto 0;
+    position: relative;
+    padding-left: 30px;
+    padding-right: 20px;
+  
+    & .point{
+      width: 10px;
+      height: 10px;
+      background:  currentColor;
+      position: absolute;
+      left: -24px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-radius: 50%;
+    }
+  
+    & .label{
+      margin-bottom: 10px;
+      position: relative;
+      
+     span{
+      color: rgba(0, 0, 0, 0.65);
+     }
+    }
+  
+    & .notice{
+      margin-top: 8px;
+      font-size: 12px;
+      white-space: pre-wrap;
+    }
+  
+    .ant-select-selection{
+      background: rgb(242, 242, 242);
+      border-color: rgb(242, 242, 242);
+    }
+  
+    .ant-checkbox-wrapper, .ant-radio-wrapper{
+      font-size: 13px;
+    }
+  }
+  
+  .confirm-btn{
+    margin: 50px auto 20px !important;
+    display: block;
+    background: @primary-color;
+    border-color: @primary-color;
+    padding: 0 30px;
+    color: #fff;
+    border: 0;
+
+    &.blue{
+      background:  @primary-color;
+    }
+
+    &.orange{
+      background: @warning-color;
+    }
+
+    &.pink{
+      background: @error-color;
+    }
+  }
+}
+
+.ant-form-item-control{
+  line-height: 150% !important;
+}
