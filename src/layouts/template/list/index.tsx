@@ -179,6 +179,7 @@ export default class extends tsx.Component<any> {
                 searchFrom = (
                   <a-select v-model={item.value} placeholder="请选择" default-value="0">
                     {
+                      Array.isArray(item.selectOptions) &&
                       item.selectOptions?.map((symbol: any) => (
                         <a-select-option value={symbol.value}>{symbol.label}</a-select-option>
                       ))

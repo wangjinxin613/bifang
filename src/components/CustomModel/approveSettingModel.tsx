@@ -1,4 +1,4 @@
-import { Component, Prop, PropSync, Emit, Watch } from "vue-property-decorator";
+import { Component, Prop, PropSync, Emit, Watch, Ref } from "vue-property-decorator";
 import * as tsx from "vue-tsx-support";
 import './index.less';
 
@@ -10,6 +10,11 @@ interface formInterface {
 @Component({
 })
 export default class extends tsx.Component<Vue> {
+
+  public get ruleForm() {
+    return this.$form.createForm(this);
+  } 
+
   @Prop({
     type: String,
     default: 'blue'
@@ -32,25 +37,24 @@ export default class extends tsx.Component<Vue> {
     this.form = newValue;
   }
 
-
   // 确认提交按钮
-  @Emit()
   public submit() {
-    this.formOptions = this.form;
-    let result = {};
-    this.form.filter((current) => {
-      Object.assign(result, {
-        [current.name]: current.value
-      })
-    })
-    return result;
+    console.log('start submit');
+    this.ruleForm.validateFields((err: any, values: any) => {
+      if (!err) {
+        this.$emit('submit', values)
+      } else {
+        console.log('表单内存在未填项');
+      }
+    });
   }
+  
 
   protected render() {
     return <div >
-      <a-modal v-model={this.visible} title={this.title} onOk="hideModal" footer={null} width="420px" class={['model', this.theme]}>
+      <a-modal v-model={this.visible} title={this.title} onOk="hideModal" footer={null} width="450px" class={['model', this.theme]}>
         <div class={this.theme}>
-          <a-form-model ref="ruleForm">
+          <a-form form={this.ruleForm} >
             {
               this.form.map((item, index) => {
                 let formItem;
@@ -58,21 +62,33 @@ export default class extends tsx.Component<Vue> {
                   formItem = (
                     <a-select
                       placeholder="请选择"
-                      v-model={item.value}
                       style="width: 100%"
                       mode={item.mode}
                       name={item.name}
+                      v-decorator={[item.name, { rules: [{ required: true, message: '请选择' + item.label + '!' }], initialValue: item.value }]}
                     >
                       {
-                        item.selectOptions?.map((symbol: any) => (
-                          <a-select-option value={symbol.value}>{symbol.label}</a-select-option>
-                        ))
+                        Array.isArray(item.selectOptions) ?
+                          item.selectOptions?.map((symbol: any) => (
+                            <a-select-option value={symbol.value}>{symbol.label}</a-select-option>
+                          )) : (typeof item.selectOptions === 'function') &&
+                          (() => {
+                            try {
+                              item.selectOptions().then((res: any) => {
+                                item.selectOptions = res;
+                              })
+                            } catch (error) {
+                              console.error("渲染选择框选项的过程中出现了问题", error);
+                            }
+                          })()
                       }
                     </a-select>
                   )
                 } else if (item.type == 'radio') {
                   formItem = (
-                    <a-radio-group name={item.name} v-model={item.value}>
+                    <a-radio-group
+                      name={item.name}
+                      v-decorator={[item.name, { rules: [{ required: true, message: '请选择' + item.label + '!' }], initialValue: item.value }]}>
                       {
                         item.selectOptions.map((symbol: { value: any; label: any; }) => (
                           <a-radio value={symbol.value}>
@@ -84,7 +100,9 @@ export default class extends tsx.Component<Vue> {
                   )
                 } else if (item.type == 'checkbox') {
                   formItem = (
-                    <a-checkbox-group v-model={item.value} name={item.name}>
+                    <a-checkbox-group
+                      v-decorator={[item.name, { rules: [{ required: false, message: '请选择' + item.label + '!' }], initialValue: item.value }]}
+                      name={item.name}>
                       {
                         item.selectOptions.map((symbol: { label: any; value: any }) => (
                           <a-checkbox value={symbol.value}>
@@ -96,7 +114,7 @@ export default class extends tsx.Component<Vue> {
                   )
                 }
                 return (
-                  <a-form-model-item prop={item.name} class={this.theme}>
+                  <a-form-item name={item.name} class={this.theme} >
                     <div class="formItem">
                       <div class="label">
                         <span>{item.label}</span>
@@ -105,14 +123,14 @@ export default class extends tsx.Component<Vue> {
                       {formItem}
                       <div class="notice">{item.notice}</div>
                     </div>
-                  </a-form-model-item>
+                  </a-form-item>
                 )
               })
             }
-            <a-button type="primary" class={['confirm-btn', this.theme]} onClick={ this.submit }>
+            <a-button type="primary" class={['confirm-btn', this.theme]} onClick={this.submit}>
               确 认
             </a-button>
-          </a-form-model>
+          </a-form>
         </div>
       </a-modal>
     </div>
