@@ -90,7 +90,21 @@ export default class extends tsx.Component<any> {
     }
     this.searchSubmit();
   }
-  
+
+  // 删除某条记录
+  deleteThis(id: string) {
+    console.log(999);
+    const { content } = this;
+    if (typeof content.deleteApi == 'function') {
+      content.deleteApi({
+        id: id
+      }).then((res: any) => {
+        this.$message.success('删除成功');
+        this.searchSubmit();
+      })
+    }
+  }
+
   mounted() {
     var { content } = this;
     // 操作的宽度固定 140
@@ -160,9 +174,9 @@ export default class extends tsx.Component<any> {
                 ) : this.customCreateBtn
               }
             </router-link>
-            <a-button type="primary" icon="export">
+            {/* <a-button type="primary" icon="export">
               导出
-            </a-button>
+            </a-button> */}
             <a-button type="primary" icon="reload" onClick={this.reload}>
               刷新
             </a-button>
@@ -174,15 +188,24 @@ export default class extends tsx.Component<any> {
             this.searchForm.map((item: formItem, index) => {
               let searchFrom;
               if (item.type === 'input') {
-                searchFrom = <a-input placeholder="请输入" size="default"  v-model={item.value}/>
+                searchFrom = <a-input placeholder="请输入" size="default" v-model={item.value} />
               } else if (item.type == 'select') {
                 searchFrom = (
                   <a-select v-model={item.value} placeholder="请选择" default-value="0">
                     {
-                      Array.isArray(item.selectOptions) &&
-                      item.selectOptions?.map((symbol: any) => (
-                        <a-select-option value={symbol.value}>{symbol.label}</a-select-option>
-                      ))
+                      Array.isArray(item.selectOptions) ?
+                        item.selectOptions?.map((symbol: any) => (
+                          <a-select-option value={symbol.value}>{symbol.label}</a-select-option>
+                        )) : (typeof item.selectOptions === 'function') &&
+                        (() => {
+                          try {
+                            item.selectOptions().then((res: any) => {
+                              item.selectOptions = res;
+                            })
+                          } catch (error) {
+                            console.error("渲染选择框选项的过程中出现了问题", error);
+                          }
+                        })()
                     }
                   </a-select>
                 )
@@ -218,9 +241,9 @@ export default class extends tsx.Component<any> {
               return <span class="action">
                 <a-icon type="unordered-list" class="see" onClick={this.columns[this.columns.length - 1].see.bind(this, record)} />
                 <a-divider type="vertical" />
-                <a-popconfirm title="确定删除这条记录吗？" okText="确定" cancelText="取消" placement="right">
+                {this.columns[this.columns.length - 1].del && <a-popconfirm title="确定删除这条记录吗？" okText="确定" cancelText="取消" placement="right" on={{ confirm: this.deleteThis.bind(this, record.id) }}>
                   <a-icon type="delete" class="delete" />
-                </a-popconfirm>
+                </a-popconfirm>}
               </span>
             }
           }}

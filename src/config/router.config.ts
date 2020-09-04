@@ -19,9 +19,9 @@ export const templateType: any = {
     component: () => import('../layouts/template/list')
   },
   form: {
-    name: 'form', // 表单型
+    name: 'form', // 表单型 包含新建页、编辑页和查看页
     component: () => import('../layouts/template/form')
-  }
+  },
 };
 
 const templateView = {};
@@ -108,19 +108,25 @@ export const manageRouter: Array<RouteConfig> = [
               },
               {
                 path: '/system/approve/detail/:id',
-                name: '查看审批流程',
-                meta: { template: templateType.list.name },
-                component: () => import('../views/system/approve/detail'),
-              },
-              {
-                path: '/system/approve/form/:id',
-                name: '创建表单审批流',
+                name: '（创建表单审批流）',
                 meta: { template: templateType.form.name },
                 component: () => import('../views/system/approve/form'),
               },
               {
-                path: '/system/approve/delForm/:id',
-                name: '删除表单审批流',
+                path: '/system/approve/form/:id',
+                name: '（创建表单审批流）',
+                meta: { template: templateType.form.name },
+                component: () => import('../views/system/approve/form'),
+              },
+              {
+                path: '/system/approveDel/form/:id',
+                name: '（删除表单审批流）',
+                meta: { template: templateType.form.name },
+                component: () => import('../views/system/approve/delForm'),
+              },
+              {
+                path: '/system/approveDel/detail/:id',
+                name: '（删除表单审批流）',
                 meta: { template: templateType.form.name },
                 component: () => import('../views/system/approve/delForm'),
               }

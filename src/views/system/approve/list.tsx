@@ -1,49 +1,53 @@
 import { Component } from "vue-property-decorator";
 import * as tsx from "vue-tsx-support";
 import { formItem } from '@/utils/interface'
-import { list } from '@/api/approve';
+import { list, del, allApprove } from '@/api/approve';
 import './style.less';
 
 @Component
 export default class extends tsx.Component<Vue> {
 
   public api = list;
+  public deleteApi = del; 
 
   public searchForm: Array<formItem> = [
     {
       type: 'select',
-      selectOptions: [{
-        label: '采购订单',
-        value: '采购订单'
-      }, {
-        label: '采购合同',
-        value: '采购合同'
-      }],
+      selectOptions: allApprove,
       label: '审批表单名称',
-      name: 'username',
-      value: '采购订单'
+      name: 'approveId',
+      value: ''
     },
   ]
 
   // 字段审批流的模板
-  private get flowTemplate() {
-    const list = [0, 1, 2, 3, 4, 8, 9];
-    return (
-      <div class="flowList">
-        {list.map((item, index) => {
-          return (
-            <div class="flowList">
-              <div class="single">
-                <div class="role">销售（发起人）</div>
-                <div class="next-icon">
-                  {index !== list.length - 1 ? <img src={require('@/assets/img/flow-next.png')} /> : ''}
+  private flowTemplate(text: any) {
+    if (typeof text == 'object') {
+      var list: any[] = [];
+      Object.keys(text).forEach((key: string, index, item: any) => {
+        list.push(text[key].concat(text[key]));
+      })
+      return (
+        <div class="flowList">
+          {list.map((item, index) => {
+            return (
+              <div class="flowList">
+                <div class="single">
+                  <a-tooltip title={item.join('、')} placement="bottom">
+                    <div class="role">{item.join('、')}</div>
+                  </a-tooltip>
+                  <div class="next-icon">
+                    {index !== list.length - 1 ? <img src={require('@/assets/img/flow-next.png')} /> : ''}
+                  </div>
+
                 </div>
               </div>
-            </div>
-          )
-        })}
-      </div>
-    )
+            )
+          })}
+        </div>
+      )
+    }
+    return '-';
   }
 
   // 自定义新建按钮
@@ -59,30 +63,43 @@ export default class extends tsx.Component<Vue> {
           </a-menu-item>
           {/* <a-menu-divider /> */}
           <a-menu-item key="1">
-            <router-link  to="delForm/create">删除表单审批流</router-link>
+            <router-link to="../approveDel/form/create">删除表单审批流</router-link>
           </a-menu-item>
         </a-menu>
       </a-dropdown>
     )
   }
 
+  // 审批流类型
+  public approveType(text: any) {
+    if (text == 1) {
+      return <span style="color: #FF7979">删除表单审批流</span>
+    }
+    return <span style="color: #4890F7">创建表单审批流</span>
+  }
+
   public columns = [
     {
       title: '审批表单名称',
-      dataIndex: 'name',
+      dataIndex: 'activityId',
       width: 150
     },
     {
       title: '审批流类型',
-      dataIndex: 'name1',
-      width: 150
+      dataIndex: 'ifDelete',
+      width: 150,
+      customRender: (text: any, row: any, index: any) => {
+        return {
+          children: this.approveType(text)
+        }
+      }
     },
     {
       title: '审批流',
-      dataIndex: 'flow',
+      dataIndex: 'roleListFlow',
       customRender: (text: any, row: any, index: any) => {
         return {
-          children: this.flowTemplate,
+          children: this.flowTemplate(text),
         }
       }
     },
@@ -90,9 +107,15 @@ export default class extends tsx.Component<Vue> {
       title: '操作',
       scopedSlots: { customRender: 'action' },
       see: (record: any) => {
-        this.$router.push({
-          path: 'detail/' + record.id
-        })
+        if(record.ifDelete == 1) {
+          this.$router.push({
+            path: '/system/approveDel/detail/' + record.id
+          })
+        } else {
+          this.$router.push({
+            path: 'detail/' + record.id
+          })
+        }
       },
       del: true
     },
