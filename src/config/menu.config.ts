@@ -10,32 +10,32 @@ export default [
   {
     path: '/gouxiao',
     name: '购销',
-    meta: { icon: 'home' },
+    meta: { icon: 'money-collect' },
   },
   {
     path: '/wuliu',
     name: '物流',
-    meta: { icon: 'home' },
+    meta: { icon: 'car' },
   },
   {
     path: '/wuliu',
     name: '仓储',
-    meta: { icon: 'home' },
+    meta: { icon: 'bank' },
   },
   {
     path: '/wuliu',
     name: '财务',
-    meta: { icon: 'home' },
+    meta: { icon: 'pay-circle' },
   },
   {
     path: '/wuliu',
     name: '档案',
-    meta: { icon: 'home' },
+    meta: { icon: 'file-search' },
   },
   {
     path: '/system',
     name: '系统',
-    meta: { icon: 'home' },
+    meta: { icon: 'setting' },
     children: [
       {
         path: '/system/member',
