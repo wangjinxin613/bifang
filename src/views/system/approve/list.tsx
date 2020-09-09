@@ -25,7 +25,7 @@ export default class extends tsx.Component<Vue> {
     if (typeof text == 'object') {
       var list: any[] = [];
       Object.keys(text).forEach((key: string, index, item: any) => {
-        list.push(text[key].concat(text[key]));
+        list.push(text[key]);
       })
       return (
         <div class="flowList">
@@ -61,7 +61,7 @@ export default class extends tsx.Component<Vue> {
           <a-menu-item key="0">
             <router-link to="form/create">创建表单审批流</router-link>
           </a-menu-item>
-          {/* <a-menu-divider /> */}
+          <a-menu-divider />
           <a-menu-item key="1">
             <router-link to="../approveDel/form/create">删除表单审批流</router-link>
           </a-menu-item>

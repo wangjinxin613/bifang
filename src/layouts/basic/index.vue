@@ -6,20 +6,29 @@
       <Menu></Menu>
       <router-view></router-view>
     </div>
+    <setting-drawer v-if="!production"></setting-drawer>
   </div>
 </template>
 
-<script type="ts">
+<script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import Header from './components/header';
-import Sidebar from './components/sidebar';
-import Menu from './components/menu';
+import Header from './components/header.vue';
+import Sidebar from './components/sidebar.vue';
+import Menu from './components/menu.vue';
+import SettingDrawer from '@/components/SettingDrawer/index';
 
 @Component({
-  components: { Header, Sidebar, Menu }
+  components: { Header, Sidebar, Menu, SettingDrawer}
 })
 export default class MyComponent extends Vue {
 
+  public get production() {
+    return false;
+  }
+ 
+  mounted() {
+    
+  }
 }
 </script>
 

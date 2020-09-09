@@ -31,7 +31,8 @@ export interface formItem {
     name: string,
     selectOptions?: Array<any>
   }],
-  hide?: Array<pageTypeEnum> // 哪种页面类型要隐藏这个字段
+  hide?: Array<pageTypeEnum>, // 哪种页面类型要隐藏这个字段
+  loading?: Boolean  // 字段是否处于刷新中
 }
 
 // 审批流设置的某一项

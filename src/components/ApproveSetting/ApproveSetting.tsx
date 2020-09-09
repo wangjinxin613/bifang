@@ -36,7 +36,7 @@ export default class extends tsx.Component<Vue> {
     default: () => []
   }) public flowList!: Array<approveSettingItem>;
 
-  @Watch('flowList', {deep: true, immediate: true})
+  @Watch('flowList', { deep: true, immediate: true })
   public watchFlowList(newValue: any) {
     console.log("flowList发生变化", newValue);
     this.list = newValue;
@@ -53,14 +53,14 @@ export default class extends tsx.Component<Vue> {
 
   public roleList: any = [];  // 角色列表
 
-  public firstOptions! : any;
-  public middleOptions! : any;
-  public lastOptions! : any;
-  public secondOptions! : any;
+  public firstOptions!: any;
+  public middleOptions!: any;
+  public lastOptions!: any;
+  public secondOptions!: any;
 
   // 点击设置审批人
   public setPerson(index: number, list: Array<any>) {
-    var  { firstOptions, middleOptions, lastOptions, secondOptions }  = this;
+    var { firstOptions, middleOptions, lastOptions, secondOptions } = this;
     // 第一节点
     if (index === 0) {
       this.formOptions = setValue(firstOptions, list[index]);
@@ -69,7 +69,7 @@ export default class extends tsx.Component<Vue> {
       // 最后一个节点
       this.theme = theme.pink;
       this.formOptions = setValue(lastOptions, list[index]);
-    } else if(index == 1) {
+    } else if (index == 1) {
       // 第二个节点和中间节点相比没有 【审批未到当前节点时，该审批人能否查看本表单】 这一选项
       this.theme = theme.orange;
       this.formOptions = setValue(secondOptions, list[index]);
@@ -88,6 +88,7 @@ export default class extends tsx.Component<Vue> {
     this.list.splice(index + 1, 0, {})
     this.$nextTick(() => {
       this.setPerson(index + 1, this.list);
+      this.modelTitle = `添加新节点`
     })
   }
 
@@ -166,18 +167,35 @@ export default class extends tsx.Component<Vue> {
     if (this.id === 'create') {
       this.list = [{}, {}, {}, {}];
     }
-    selectList().then(res => {
-      this.roleList = res;
-    })
+    // 加载表单配置项
     var options = require('./modelFormOptions');
-    if(this.isDelete) {
+    if (this.isDelete) {
       var options = require('./delModelFormOptions');
     }
-    var  { firstOptions, middleOptions, lastOptions, secondOptions }  = options;
+    var { firstOptions, middleOptions, lastOptions, secondOptions } = options;
     this.firstOptions = firstOptions;
     this.middleOptions = middleOptions;
     this.lastOptions = lastOptions;
     this.secondOptions = secondOptions;
+    var _self: any = this;
+    // 获取角色列表
+    selectList().then(res => {
+      this.roleList = res;
+      Object.keys(options).forEach((key: string) => {
+        for (let i in options[key]) {
+          if (options[key][i].name === 'roles') {
+            this.$set(_self[key][i], 'selectOptions', res);
+            this.$set(_self[key][i], 'loading', false);
+          }
+        }
+      })
+      for(let i in this.formOptions) {
+        if(this.formOptions[i].name == 'roles') {
+          this.$set(_self.formOptions[i], 'selectOptions', res)
+          this.$set(_self.formOptions[i], 'loading', false)
+        }
+      }
+    })
   }
 
   protected render() {
@@ -217,7 +235,7 @@ export default class extends tsx.Component<Vue> {
                             <span>{this.getRoleName(item.roles)}</span>
                           </div>
                         ) : (
-                          this.pageType !== pageTypeEnum.detail &&
+                            this.pageType !== pageTypeEnum.detail &&
                             <div class="setPerson" onClick={this.setPerson.bind(this, index, list)}><a-icon type="setting" class="icon" /> 设置{index === 0 ? '发起人' : index === list.length - 1 ? '最终审批人' : '审批人'} </div>
                           )
                       }

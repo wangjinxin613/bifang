@@ -40,38 +40,12 @@ const vueConfig = {
       },
       [process.env.VUE_APP_BASE_TEST_API1 + '/']: {
         target: 'http://192.168.3.79:18081/',
-        //  target: 'http://dr.free.idcfengye.com/',
         ws: false,
         changeOrigin: true,
         pathRewrite: {
           [`^${process.env.VUE_APP_BASE_TEST_API1}`]: 'api'
         }
       },
-      [process.env.VUE_APP_BASE_TEST_API2 + '/']: {
-        target: 'http://192.168.3.139:18081/',
-        //target: 'http://zhangwenzheng.free.idcfengye.com/',
-        ws: false,
-        changeOrigin: true,
-        pathRewrite: {
-          [`^${process.env.VUE_APP_BASE_TEST_API2}`]: 'api'
-        }
-      },
-      [process.env.VUE_APP_BASE_TEST_API3 + '/']: {
-        target: 'https://nong.chaincomp.net/',
-        ws: false,
-        changeOrigin: true,
-        pathRewrite: {
-          [`^${process.env.VUE_APP_BASE_TEST_API3}`]: 'api'
-        }
-      },
-      // [process.env.VUE_APP_BASE_TEST_API4 + '/']: {
-      //    target: 'http://192.168.3.4:18071/',
-      //    ws: false,
-      //    changeOrigin: true,
-      //    pathRewrite: {
-      //       [`^${process.env.VUE_APP_BASE_TEST_API4}`]: 'api'
-      //    }
-      // }
     },
     disableHostCheck: true
   },

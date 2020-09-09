@@ -2,7 +2,7 @@ import { Component, Ref } from "vue-property-decorator";
 import * as tsx from "vue-tsx-support";
 import { formItem } from '@/utils/interface'
 import approveSetting from '@/components/ApproveSetting/ApproveSetting';
-import { worksList, create as createApi, detail as detailApi, del as deleteApi } from '@/api/approve';
+import { worksList, create as createApi, detail as detailApi, del as deleteApi, selectList } from '@/api/approve';
 import './style.less';
 import { approveSettingItem, formModel } from '@/utils/interface'
 import { formPageTypeEnum as pageTypeEnum } from '@/utils/enum';
@@ -130,19 +130,35 @@ export default class extends tsx.Component<formModel> {
           name: 'processId'
         }
       ],
+      loading: true
     },
     {
       type: 'select',
       value: '',
       label: '复制审核流程',
       name: '',
-      selectOptions: [
-        {
-          label: '不复制',
-          value: '不复制'
-        }
-      ],
-      hide: [ pageTypeEnum.detail, pageTypeEnum.update ]
+      selectOptions: selectList,
+      hide: [ pageTypeEnum.detail, pageTypeEnum.update ],
+      onChange(value: string, params: any){
+        const { label } = params;
+        (this as any).$confirm({
+          title: '确定要复制'+ label +'的审核流程吗?',
+          content: '目前设置的审批流程将会被替换',
+          onOk:() => {
+            const hide = (this as any ).$message.loading('正在复制中，请稍后', 0);
+            detailApi({
+              id: value
+            }).then((res: any) => {
+              (this as any).formData = {describe: res.describtion};
+              (this as any).content.loadDataAfter.call((this as any).content, res);
+              hide();
+            })
+          },
+          onCancel() {
+            value = '';
+          },
+        });
+      }
     },
     {
       type: 'customer',

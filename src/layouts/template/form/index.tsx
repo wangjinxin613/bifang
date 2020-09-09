@@ -55,6 +55,15 @@ export default class extends tsx.Component<Vue> {
     return item.value;
   }
 
+  public get formData() {
+    return this.formModel.getFieldsValue();
+  }
+
+  public set formData(value) {
+    console.log('监听到赋值操作', value);
+    this.setFieldsValue(value);
+  }
+
   // 提交表单事件
   public submit() {
     this.formModel.validateFields(async err => {
@@ -133,6 +142,13 @@ export default class extends tsx.Component<Vue> {
             this.$message.error(res.payload ?? '发生未知错误');
           });
         }
+      } else {
+        console.log(this.$notification);
+        this.$notification['error']({
+          message: '表单校验试验',
+          description:
+            '存在未校验通过的表单项，请修改后重试！',
+        });
       }
     })
   }
@@ -215,6 +231,7 @@ export default class extends tsx.Component<Vue> {
     });
   }
 
+
   mounted() {
     const { content } = this;
     Object.assign(this, {
@@ -224,7 +241,6 @@ export default class extends tsx.Component<Vue> {
     // 详情页和编辑页打开界面自动加载数据
     if (this.pageType === pageTypeEnum.detail || this.pageType == pageTypeEnum.update) {
       if (typeof content.detailApi == 'function') {
-
         content.detailApi({
           id: this.id
         }).then(async (res: any) => {
@@ -260,7 +276,7 @@ export default class extends tsx.Component<Vue> {
           </div>
           <div class="form">
             <a-skeleton loading={this.pageLoading} active>
-              {!this.pageLoading &&
+              {
                 <a-form layout="horizontal" form={this.formModel} >
                   <a-row gutter={60} style="width: 100%;">
                     {
@@ -280,7 +296,6 @@ export default class extends tsx.Component<Vue> {
                               }
                             ]}
                             disabled={false}
-                            readonly={false}
                             name={item.name}
                             type={item.name}
                           // prefix="item.isMoney ? (typeof item.prefix == 'undefined' ? '￥' : item.prefix) : item.prefix"
@@ -291,10 +306,10 @@ export default class extends tsx.Component<Vue> {
                           formItem = <a-select
                             placeholder="请选择"
                             disabled={item.disabled}
-                            readonly={item.readonly}
                             v-decorator={[item.name, { rules: [{ required: item.required, message: '请选择' + item.label + '!' }], initialValue: item.value }]}
                             mode={item.mode}
-                          // onChange={typeof item.onChange == 'function' ? item.onChange.bind(this, '$event', item) : null}
+                            loading={ typeof item.selectOptions === 'function' ? true : false }
+                            onChange={ (value: any, option: any) => { typeof item.onChange == 'function' && item.onChange.call(this, value, { key: index, item: item, formOption: this.formOption, event: event, label: (event?.target as any).textContent }) }}
                           // :filter-option="filterOption"
                           // :show-search="item.showSearch"
                           >
@@ -331,7 +346,6 @@ export default class extends tsx.Component<Vue> {
                                 }
                               ]}
                               disabled={item.disabled}
-                              readonly={item.readonly}
                               name={item.name}
                             // onChange={typeof item.onChange == 'function' ? item.onChange.bind(this, item) : ''}
                             />
@@ -340,7 +354,7 @@ export default class extends tsx.Component<Vue> {
                         if(Array.isArray(item.hide) && item.hide.indexOf(this.pageType) != -1) {
                           return '';
                         }
-                        const textItem = <div class="textItem">{this.getTextItem(item)}</div>
+                        const textItem = <div class="textItem">{ typeof item.selectOptions == 'function' ? <a-icon type="loading" />: this.getTextItem(item)}</div>
                         if (item.type !== 'customer') {
                           return (
                             <a-col span={item.width ?? 8}>

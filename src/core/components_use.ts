@@ -45,7 +45,8 @@ import {
   Popconfirm,
   message,
   ConfigProvider,
-  FormModel
+  FormModel,
+  notification
 } from 'ant-design-vue'
 
 Vue.use(LocaleProvider)
@@ -94,3 +95,4 @@ Vue.prototype.$info = Modal.info
 Vue.prototype.$success = Modal.success
 Vue.prototype.$error = Modal.error
 Vue.prototype.$warning = Modal.warning
+Vue.prototype.$notification = notification

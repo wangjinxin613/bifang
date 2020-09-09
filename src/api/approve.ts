@@ -20,6 +20,25 @@ export function list(parameter?: Object) {
   })
 }
 
+export function selectList(parameter?: Object) {
+  return new Promise((resolve, reject) => {
+    axios({
+      url: api.list,
+      method: 'get',
+      params: parameter
+    }).then((res: any) => {
+      var result = [];
+      for (let i in res.list) {
+        result.push({
+          label: res.list[i]?.activityId,
+          value: res.list[i]?.id
+        })
+      }
+      resolve(result);
+    })
+  })
+}
+
 export function worksList(parameter?: Object): Promise<Object> {
   return new Promise((resolve, reject) => {
     axios({

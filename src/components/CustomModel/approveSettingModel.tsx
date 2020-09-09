@@ -33,13 +33,12 @@ export default class extends tsx.Component<Vue> {
 
   @Watch('formOptions', { immediate: true, deep: true })
   public onFormOptions(newValue: Array<any>, oldValue: Array<any>) {
-    //console.log('监听到formOptions发生改变', newValue);
+   // console.log('监听到formOptions发生改变', newValue);
     this.form = newValue;
   }
 
   // 确认提交按钮
   public submit() {
-    console.log('start submit');
     this.ruleForm.validateFields((err: any, values: any) => {
       if (!err) {
         this.$emit('submit', values)
@@ -65,6 +64,7 @@ export default class extends tsx.Component<Vue> {
                       style="width: 100%"
                       mode={item.mode}
                       name={item.name}
+                      loading={item.loading}
                       v-decorator={[item.name, { rules: [{ required: true, message: '请选择' + item.label + '!' }], initialValue: item.value }]}
                     >
                       {

@@ -20,6 +20,7 @@ export default class MyComponent extends Vue {
   public showPage = true;
   public templateName = 'default';
   public templateType = templateType;
+  $bus: any;
 
   @Watch('$route', { immediate: true, deep: true })
   public onRouteWacth(){
@@ -44,6 +45,11 @@ export default class MyComponent extends Vue {
     }
   }
 
+  public mounted() {
+    this.$bus.$on("refresh", () => {
+      this.refresh();
+    })
+  }
 
 }
 </script>

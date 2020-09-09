@@ -1,4 +1,5 @@
-import { selectList } from '@/api/role';
+//import { selectList } from '@/api/role';
+var selectList: [] = [];
 
 // 第一节点
 export const firstOptions : Array<any> = [
@@ -9,7 +10,8 @@ export const firstOptions : Array<any> = [
     name: 'roles',
     value: [],
     mode:"multiple",
-    selectOptions: selectList
+    selectOptions: selectList,
+    loading: true
   }
 ]
 
@@ -21,7 +23,8 @@ export const secondOptions: Array<any> = [
     name: 'roles',
     value: [],
     mode:"multiple",
-    selectOptions: selectList
+    selectOptions: selectList,
+    loading: true
   }
 ]
 
@@ -36,7 +39,8 @@ export const middleOptions : Array<any> = [
     name: 'roles',
     value: [],
     mode:"multiple",
-    selectOptions: selectList
+    selectOptions: selectList,
+    loading: true
   },
   {
     label: '审批未到当前节点时，该审批人能否查看本表单',
@@ -67,7 +71,8 @@ export const lastOptions : Array<any> = [
     name: 'roles',
     value: [],
     mode:"multiple",
-    selectOptions: selectList
+    selectOptions: selectList,
+    loading: true
   },
   {
     label: '审批未到当前节点时，该审批人能否查看本表单',
