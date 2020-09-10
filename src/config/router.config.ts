@@ -24,12 +24,13 @@ export const templateType: any = {
   },
 };
 
-const templateView = {};
+export const templateView = {};
 Object.keys(templateType).forEach((key) => {
   Object.assign(templateView, {
     [key]: templateType[key].component
   });
 })
+
 
 // 管理页面路由
 export const manageRouter: Array<RouteConfig> = [
@@ -72,28 +73,8 @@ export const manageRouter: Array<RouteConfig> = [
       {
         path: '/system',
         name: '系统',
-        redirect: '/system/member/list',
         components: defaultViewType,
         children: [
-          {
-            path: '/system/member',
-            redirect: '/system/member/list',
-            name: '用户管理',
-            components: templateView,
-            children: [
-              {
-                path: '/system/member/list',
-                name: '全部',
-                meta: { template: templateType.default.name },
-                component: () => import('../views/system/member/list.vue'),
-              }
-            ]
-          },
-          {
-            path: '/system/role/list',
-            name: '角色权限管理',
-            component: () => import('../views/About.vue'),
-          },
           {
             path: '/system/approve',
             redirect: '/system/approve/list',

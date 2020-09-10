@@ -38,20 +38,6 @@ export default [
     meta: { icon: 'setting' },
     children: [
       {
-        path: '/system/member',
-        name: '用户管理',
-        children: [
-          {
-            path: '/system/member/list',
-            name: '全部',
-          }
-        ]
-      },
-      {
-        path: '/system/role/list',
-        name: '角色权限管理',
-      },
-      {
         path: '/system/approve',
         name: '审批管理',
         children: [

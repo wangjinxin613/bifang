@@ -1,0 +1,58 @@
+{
+  "name": "用户管理",
+  "id": "member",
+  "parentName": "系统",
+  "parentId": "system",
+  "pages": [
+    {
+      "id": "list",
+      "name": "用户列表",
+      "type": "list",
+      "menu": {
+        "show": true,
+        "name": "全部"
+      },
+      "data": {
+        "api": "@get('/activity/getApproveList')",
+        "deleteApi": "@get('/activity/delete')",
+        "searchForm": [
+          {
+            "type": "select",
+            "selectOptions": "@approveIdSelect",
+            "label": "审批表单名称",
+            "name": "approveId"
+          }
+        ],
+        "columns": [
+          {
+            "title": "审批表单名称",
+            "dataIndex": "activityId",
+            "width": 150
+          },
+          {
+            "title": "审批流类型",
+            "dataIndex": "ifDelete",
+            "width": 150,
+            "customRender": "@ifDeleteRender"
+          },
+          {
+            "title": "审批流",
+            "dataIndex": "roleListFlow",
+            "customRender": "@roleListFlowRender"
+          },
+          {
+            "title": "操作",
+            "scopedSlots": { "customRender": "action" },
+            "see": "@see",
+            "del": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "form",
+      "name": "用户",
+      "type": "form"
+    }
+  ]
+}

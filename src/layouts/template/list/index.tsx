@@ -3,7 +3,7 @@ import * as tsx from "vue-tsx-support";
 import '@/assets/style/listView.less';
 import { STable } from '@/components';
 import { formItem } from '@/utils/interface'
-import menuConfig from "@/config/menu.config";
+import { menuConfig } from "@/router/index";
 import { RouteConfig } from "vue-router";
 
 @Component({
@@ -197,7 +197,7 @@ export default class extends tsx.Component<any> {
                         item.selectOptions?.map((symbol: any) => (
                           <a-select-option value={symbol.value}>{symbol.label}</a-select-option>
                         )) : (typeof item.selectOptions === 'function') &&
-                        (() => {
+                        (() => { 
                           try {
                             item.selectOptions().then((res: any) => {
                               item.selectOptions = res;

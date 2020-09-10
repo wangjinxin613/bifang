@@ -21,7 +21,7 @@
 
 <script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
-import menuConfig from "@/config/menu.config";
+import { menuConfig } from "@/router/index";
 import { RouteConfig } from "vue-router";
 
 @Component({})
