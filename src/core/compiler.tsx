@@ -5,7 +5,6 @@
 import { RouteConfig } from 'vue-router'
 import { manageRouter, templateView } from '../config/router.config';
 import menuConfig from '../config/menu.config';
-import app from '@/store/modules/app';
 
 interface appConfig {
   name: string,
@@ -154,11 +153,15 @@ class compiler {
     Object.keys(data).forEach((key: string) => {
       let value = data[key];
       if(typeof value == 'string' && value.indexOf('@') != -1) { 
-        var reg = /(\w)+/ig;
-        //console.log(reg.exec(value));
-        var result = value.match(reg); // 捕获的第一个结果为函数名，后边的是参数
-        
-        console.log(result);
+        var funName = ''; // 函数名
+        var params = []; // 参数
+        // 带参数
+        if(value.indexOf("('") != -1) {
+          funName = value.substring(1, value.indexOf('('));
+          params = value.substring(value.indexOf("(") + 2, value.indexOf(")")).split(',');
+          console.log(params);
+          console.log(value);
+        }
       }
       if(value instanceof Object) {
         // console.log(value)
