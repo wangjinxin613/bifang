@@ -46,27 +46,27 @@ export const manageRouter: Array<RouteConfig> = [
         component: () => import( '../views/Home.vue')
       },
       {
-        path: '/gouxiao',
+        path: '/sale',
         name: '购销',
         component: () => import('../views/About.vue')
       },
       {
-        path: '/wuliu',
+        path: '/logistics',
         name: '物流',
         component: () => import('../views/About.vue')
       },
       {
-        path: '/wuliu',
+        path: '/storage',
         name: '仓储',
         component: () => import('../views/About.vue')
       },
       {
-        path: '/wuliu',
+        path: '/finance',
         name: '财务',
         component: () => import('../views/About.vue')
       },
       {
-        path: '/wuliu',
+        path: '/archives',
         name: '档案',
         component: () => import('../views/About.vue')
       },

@@ -16,7 +16,7 @@ export interface formItem {
   required?: boolean, // 是否必填
   extra?: string, // 下边额外的展示信息
   validator?: Object | any, // 自定义校验规则
-  disabled?: boolean,
+  disabled?:  Array<pageTypeEnum>,
   readonly?: boolean,
   prefix?: string, // 表单前置修饰文字
   suffix?: string, // 表单后置修饰后缀
@@ -56,6 +56,8 @@ export interface formModel {
   detailApi: Function, // 详情页的获取数据接口函数
   deleteApi: Function, // 删除事件的接口函数
   formOption: Array<FormItem>,  // 表单的配置项集合
-  submitcallback: Function, // 提交表单成功后的回调函数 创建和更新都会调用这一函数
+  submitCallback: Function, // 提交表单成功后的回调函数 创建和更新都会调用这一函数
   getCallback: Function,  // detailApi获取数据成功后的回调函数
+  resetForm: Function,  // 重置表单的回调函数
+  deleteCallback: Function
 }

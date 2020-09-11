@@ -6,6 +6,7 @@ export const api = {
   list: '/activity/getApproveList',
   // 获取审批表单名称的选择框选项
   worksList: '/activity/worksList',
+  deleteWorksList: '/activity/deleteWorksList',
   allApprove: '/activity/allApprove',
   create: '/activity/deploy',
   detail: '/activity/selectById',
@@ -32,6 +33,25 @@ export function selectList(parameter?: Object) {
         result.push({
           label: res.list[i]?.activityId,
           value: res.list[i]?.id
+        })
+      }
+      resolve(result);
+    })
+  })
+}
+
+export function deleteWorksList(parameter?: Object): Promise<Object> {
+  return new Promise((resolve, reject) => {
+    axios({
+      url: api.deleteWorksList,
+      method: 'get',
+      params: parameter
+    }).then((res: any) => {
+      var result = [];
+      for (let i in res) {
+        result.push({
+          label: res[i]?.approveName,
+          value: res[i]?.id
         })
       }
       resolve(result);

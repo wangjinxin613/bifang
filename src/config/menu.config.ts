@@ -8,27 +8,27 @@ export default [
     meta: { icon: 'home' },
   },
   {
-    path: '/gouxiao',
+    path: '/sale',
     name: '购销',
     meta: { icon: 'money-collect' },
   },
   {
-    path: '/wuliu',
+    path: '/logistics',
     name: '物流',
     meta: { icon: 'car' },
   },
   {
-    path: '/wuliu',
+    path: '/storage',
     name: '仓储',
     meta: { icon: 'bank' },
   },
   {
-    path: '/wuliu',
+    path: '/finance',
     name: '财务',
     meta: { icon: 'pay-circle' },
   },
   {
-    path: '/wuliu',
+    path: '/archives',
     name: '档案',
     meta: { icon: 'file-search' },
   },

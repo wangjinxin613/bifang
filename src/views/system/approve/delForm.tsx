@@ -2,7 +2,7 @@ import { Component, Ref } from "vue-property-decorator";
 import * as tsx from "vue-tsx-support";
 import { formItem } from '@/utils/interface'
 import approveSetting from '@/components/ApproveSetting/ApproveSetting';
-import { worksList, create as createApi, detail as detailApi, del as deleteApi, selectList } from '@/api/approve';
+import { deleteWorksList , create as createApi, detail as detailApi, del as deleteApi, selectList } from '@/api/approve';
 import './style.less';
 import { approveSettingItem, formModel } from '@/utils/interface'
 import { formPageTypeEnum as pageTypeEnum } from '@/utils/enum';
@@ -90,14 +90,25 @@ export default class extends tsx.Component<formModel> {
     } catch (error) {
       
     }
-  
   }
 
   protected mounted() {
 
   }
 
-  public submitcallback(res: any) {
+  public deleteCallback() {
+    this.$success({
+      title: '删除成功',
+      okText: '知道了',
+      onOk: () => {
+        this.$router.push({
+          path: '/system/approve/list'
+        });
+      }
+    });
+  }
+
+  public submitCallback(res: any, fieldsValue: any) {
     if (res.code == 200) {
       this.$success({
         title: '提交成功',
@@ -111,8 +122,13 @@ export default class extends tsx.Component<formModel> {
     } else {
       this.$message.error(res.payload ?? '发生未知错误');
     }
+    this.loadDataAfter(fieldsValue);
   }
   
+  public resetForm() {
+    this.approveModel.list = [{}, {}, {}, {}]
+  }
+
   private get customerRender() {
     return (
       <div style="display: flex;margin-bottom: 20px">
@@ -131,10 +147,10 @@ export default class extends tsx.Component<formModel> {
       label: '审批表单名称',
       name: 'worksId',
       required: true,
-      selectOptions: worksList,
+      selectOptions: deleteWorksList,
       selectOptionsCallback: (res: any, apiData: any) => {
         res.push({
-          label: apiData.activityId,
+          label: apiData.approveName,
           value: apiData.workId
         })
         return res;
@@ -146,6 +162,7 @@ export default class extends tsx.Component<formModel> {
           name: 'processId'
         }
       ],
+      disabled: [ pageTypeEnum.update],
       loading: true
     },
     {
@@ -153,7 +170,7 @@ export default class extends tsx.Component<formModel> {
       value: '',
       label: '复制审核流程',
       name: '',
-      selectOptions: selectList,
+      selectOptions: () => selectList({ ifDelete: 1 }),
       hide: [ pageTypeEnum.detail, pageTypeEnum.update ],
       onChange(value: string, params: any){
         const { label } = params;
@@ -165,13 +182,14 @@ export default class extends tsx.Component<formModel> {
             detailApi({
               id: value
             }).then((res: any) => {
-              (this as any).formData = {describe: res.describtion};
+             // (this as any).formData = {describe: res.describtion};
               (this as any).content.loadDataAfter.call((this as any).content, res);
               hide();
             })
           },
           onCancel() {
-            value = '';
+            (this as any).formData = {copyFlow : ''};
+            (this as any).$forceUpdate();
           },
         });
       }

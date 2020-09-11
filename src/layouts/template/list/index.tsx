@@ -133,7 +133,7 @@ export default class extends tsx.Component<any> {
         })
       });
       const { content } = this;
-      if (content && content.api) {
+      if (content && typeof content.api == 'function') {
         if (content.setParameter) {
           Object.assign(this.queryParam, await content.setParameter(this.queryParam));
         }

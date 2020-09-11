@@ -78,12 +78,16 @@ class compiler {
             routerItem.children = [router];
           }
         }
-        if(Array.isArray(routerItem.children) ) {
-          Object.assign(routerItem, {
-            redirect: routerItem.children[0].path
-          })
-        }
+        
       })
+    })
+    // 一级菜单会被重定向到第一个二级菜单
+    router?.map((routerItem) => {
+      if(Array.isArray(routerItem.children) ) {
+        Object.assign(routerItem, {
+          redirect: routerItem.children[0].path
+        })
+      }
     })
     this.router = manageRouter;
   }
@@ -135,23 +139,30 @@ class compiler {
         if(typeof data !== 'object') {
           break;
         }
-        this.parsingData(data);
+        console.log();
+        this.parsingData(data, appItem.pages[i].id);
       }
     })
   }
 
-  public parsingData(data: any) {
+  /**
+   * 解析指令
+   * @param data 
+   * @param id 页面的标识
+   */
+  public parsingData(data: any, id: string) {
     Object.keys(data).forEach((key: string) => {
       let value = data[key];
       if(typeof value == 'string' && value.indexOf('@') != -1) { 
         var reg = /(\w)+/ig;
         //console.log(reg.exec(value));
         var result = value.match(reg); // 捕获的第一个结果为函数名，后边的是参数
-        console.log(value.match(reg));
+        
+        console.log(result);
       }
       if(value instanceof Object) {
         // console.log(value)
-        this.parsingData(value);
+        this.parsingData(value, id);
       }
     })
   }

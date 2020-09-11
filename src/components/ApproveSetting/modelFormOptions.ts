@@ -17,7 +17,7 @@ export const firstOptions : Array<any> = [
     label: '能否自选下一节点审批用户',
     type: 'radio',
     name: 'ifChoose',
-    value: 1,
+    value: 2,
     selectOptions: [
       {
         label: '能',
@@ -75,7 +75,7 @@ export const secondOptions: Array<any> = [
     label: '能否自选下一节点审批用户',
     type: 'radio',
     name: 'ifChoose',
-    value: 1,
+    value: 2,
     selectOptions: [
       {
         label: '能',
@@ -156,7 +156,7 @@ export const middleOptions : Array<any> = [
     label: '能否自选下一节点审批用户',
     type: 'radio',
     name: 'ifChoose',
-    value: 1,
+    value: 2,
     selectOptions: [
       {
         label: '能',
@@ -188,7 +188,7 @@ export const middleOptions : Array<any> = [
     label: '审批未到当前节点时，该审批人能否查看本表单',
     type: 'radio',
     name: 'readBefore',
-    value: 1,
+    value: 2,
     selectOptions: [
       {
         label: '能',
@@ -269,7 +269,7 @@ export const lastOptions : Array<any> = [
     label: '审批未到当前节点时，该审批人能否查看本表单',
     type: 'radio',
     name: 'readBefore',
-    value: 1,
+    value: 2,
     selectOptions: [
       {
         label: '能',

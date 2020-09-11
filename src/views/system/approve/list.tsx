@@ -81,7 +81,7 @@ export default class extends tsx.Component<Vue> {
   public columns = [
     {
       title: '审批表单名称',
-      dataIndex: 'activityId',
+      dataIndex: 'approveName',
       width: 150
     },
     {

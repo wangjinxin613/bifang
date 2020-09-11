@@ -88,9 +88,28 @@ export default class extends tsx.Component<formModel> {
     try {
       this.approveModel.list = list;
     } catch (error) {
-      
     }
-  
+  }
+
+  public submitCallback(res: any, fieldsValue: any) {
+    if (res.code == 200) {
+      this.$success({
+        title: '提交成功',
+        okText: '知道了',
+        onOk: () => {
+          this.$router.push({
+            path: '/system/approve/list'
+          });
+        }
+      });
+    } else {
+      this.$message.error(res.payload ?? '发生未知错误');
+    }
+    this.loadDataAfter(fieldsValue);
+  }
+
+  public resetForm() {
+    this.approveModel.list = [{}, {}, {}, {}]
   }
 
   protected mounted() {
@@ -130,14 +149,15 @@ export default class extends tsx.Component<formModel> {
           name: 'processId'
         }
       ],
-      loading: true
+      loading: true,
+      disabled: [ pageTypeEnum.update]
     },
     {
       type: 'select',
       value: '',
       label: '复制审核流程',
-      name: '',
-      selectOptions: selectList,
+      name: 'copyFlow',
+      selectOptions: () => selectList({ ifDelete: 2 }),
       hide: [ pageTypeEnum.detail, pageTypeEnum.update ],
       onChange(value: string, params: any){
         const { label } = params;
@@ -149,13 +169,14 @@ export default class extends tsx.Component<formModel> {
             detailApi({
               id: value
             }).then((res: any) => {
-              (this as any).formData = {describe: res.describtion};
+              // (this as any).formData = {describe: res.describtion};
               (this as any).content.loadDataAfter.call((this as any).content, res);
               hide();
             })
           },
-          onCancel() {
-            value = '';
+          onCancel: () => {
+            (this as any).formData = {copyFlow : ''};
+            (this as any).$forceUpdate();
           },
         });
       }

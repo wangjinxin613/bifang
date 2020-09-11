@@ -62,6 +62,11 @@ export default class extends tsx.Component<Vue> {
   public set formData(value) {
     console.log('监听到赋值操作', value);
     this.setFieldsValue(value);
+    try {
+      this.formModel.setFieldsValue(value);
+    } catch (error) {
+      
+    }
   }
 
   // 提交表单事件
@@ -117,8 +122,8 @@ export default class extends tsx.Component<Vue> {
         const deployApi = this.pageType === pageTypeEnum.create ? content.createApi : content.updateApi;
         if (typeof deployApi === 'function') {
           deployApi(fieldsValue).then((res: any) => {
-            if (typeof content.submitcallback == 'function') {
-              content.submitcallback(res);
+            if (typeof content.submitCallback == 'function') {
+              content.submitCallback.call(content, res, fieldsValue);
             } else {
               if (res.code == 200) {
                 this.$success({
@@ -169,15 +174,19 @@ export default class extends tsx.Component<Vue> {
           content.deleteApi({
             id: this.id
           }).then((res: any) => {
-            this.$success({
-              title: '删除成功',
-              okText: '知道了',
-              onOk: () => {
-                this.$router.push({
-                  path: '../list'
-                });
-              }
-            });
+            if(typeof content.deleteCallback == 'function') {
+              content.deleteCallback(res);
+            } else {
+              this.$success({
+                title: '删除成功',
+                okText: '知道了',
+                onOk: () => {
+                  this.$router.push({
+                    path: '../list'
+                  });
+                }
+              });
+            }
             this.deleteBtnLoading = false;
             hide();
           })
@@ -229,6 +238,9 @@ export default class extends tsx.Component<Vue> {
           current.value = [];
        }
     });
+    if(typeof this.content.resetForm == 'function') {
+      this.content.resetForm();
+    }
   }
 
 
@@ -277,6 +289,7 @@ export default class extends tsx.Component<Vue> {
           <div class="form">
             <a-skeleton loading={this.pageLoading} active>
               {
+                !this.pageLoading &&
                 <a-form layout="horizontal" form={this.formModel} >
                   <a-row gutter={60} style="width: 100%;">
                     {
@@ -295,7 +308,7 @@ export default class extends tsx.Component<Vue> {
                                 validateFirst: true
                               }
                             ]}
-                            disabled={false}
+                            disabled={ Array.isArray(item.disabled) && item.disabled.indexOf(this.pageType) != -1 ? true : false}
                             name={item.name}
                             type={item.name}
                           // prefix="item.isMoney ? (typeof item.prefix == 'undefined' ? '￥' : item.prefix) : item.prefix"
@@ -305,7 +318,7 @@ export default class extends tsx.Component<Vue> {
                         } else if (item.type == 'select') {
                           formItem = <a-select
                             placeholder="请选择"
-                            disabled={item.disabled}
+                            disabled={ Array.isArray(item.disabled) && item.disabled.indexOf(this.pageType) != -1 ? true : false}
                             v-decorator={[item.name, { rules: [{ required: item.required, message: '请选择' + item.label + '!' }], initialValue: item.value }]}
                             mode={item.mode}
                             loading={ typeof item.selectOptions === 'function' ? true : false }
@@ -345,7 +358,7 @@ export default class extends tsx.Component<Vue> {
                                   validateFirst: true
                                 }
                               ]}
-                              disabled={item.disabled}
+                              disabled={ Array.isArray(item.disabled) && item.disabled.indexOf(this.pageType) != -1 ? true : false}
                               name={item.name}
                             // onChange={typeof item.onChange == 'function' ? item.onChange.bind(this, item) : ''}
                             />

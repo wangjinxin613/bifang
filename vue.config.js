@@ -39,7 +39,7 @@ const vueConfig = {
         }
       },
       [process.env.VUE_APP_BASE_TEST_API1 + '/']: {
-        target: 'http://192.168.3.79:18081/',
+        target: 'http://192.168.3.139:18081/',
         ws: false,
         changeOrigin: true,
         pathRewrite: {
