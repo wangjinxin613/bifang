@@ -239,7 +239,7 @@ export default class extends tsx.Component<any> {
           scopedSlots={{
             action: (props: any, record: any) => {
               return <span class="action">
-                <a-icon type="unordered-list" class="see" onClick={this.columns[this.columns.length - 1].see.bind(this, record)} />
+                <a-icon type="unordered-list" class="see" onClick={() => typeof this.columns[this.columns.length - 1].see == 'function' && this.columns[this.columns.length - 1].see.bind(this, record)} />
                 <a-divider type="vertical" />
                 {this.columns[this.columns.length - 1].del && <a-popconfirm title="确定删除这条记录吗？" okText="确定" cancelText="取消" placement="right" on={{ confirm: this.deleteThis.bind(this, record.id) }}>
                   <a-icon type="delete" class="delete" />

@@ -1,7 +1,7 @@
 import { list, del, allApprove, selectList } from '@/api/approve';
 import './style.less';
 
-export const approveIdSelect = () => allApprove;
+export const approveIdSelect = allApprove;
 
 // 审批流类型
 export function ifDeleteRender(text: any, row: any, index: any) {
@@ -49,14 +49,14 @@ export function roleListFlowRender(text: any, row: any, index: any) {
   }
 }
 
-export function see(record: any) {
-  // if(record.ifDelete == 1) {
-  //   this?.$router.push({
-  //     path: '/system/approveDel/detail/' + record.id
-  //   })
-  // } else {
-  //   this.$router.push({
-  //     path: 'detail/' + record.id
-  //   })
-  // }
+export function see(this: any, record: any) {
+  if(record.ifDelete == 1) {
+    this.$router.push({
+      path: '/system/approveDel/detail/' + record.id
+    })
+  } else {
+    this.$router.push({
+      path: 'detail/' + record.id
+    })
+  }
 }

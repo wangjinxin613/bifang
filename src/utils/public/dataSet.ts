@@ -6,11 +6,17 @@ import {
   axios
 } from '@/utils/request'
 
-export const name = '';
+// export const name = '';
 
 /**
  * 发起一个get请求
+ * @apiUrl get请求的地址
+ * @params get请求的参数
  */
-export function get(apiUrl: String ) {
-  
+export async function get(this: any, apiUrl: string , params: any ) {
+  return axios({
+    url: apiUrl,
+    method: 'get',
+    params: params
+  })
 }
