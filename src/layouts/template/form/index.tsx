@@ -146,6 +146,11 @@ export default class extends tsx.Component<Vue> {
             hide();
             this.$message.error(res.payload ?? '发生未知错误');
           });
+        } else {
+          console.error("当前页面未设置提交接口");
+          this.$message.error('发生未知错误');
+          hide();
+          this.btnLoading = false;
         }
       } else {
         console.log(this.$notification);
@@ -384,7 +389,7 @@ export default class extends tsx.Component<Vue> {
                         } else {
                           return (
                             <a-col span={24}>
-                              {item.render}
+                              { typeof item.render == 'function' ? item.render() : item.render }
                             </a-col>
                           )
                         }

@@ -5,6 +5,8 @@
 import { RouteConfig } from 'vue-router'
 import { manageRouter, templateView } from '../config/router.config';
 import menuConfig from '../config/menu.config';
+import { Vue, Component, Ref } from 'vue-property-decorator'
+import * as tsx from "vue-tsx-support";
 
 interface appConfig {
   appName: string,  // 模块文件夹的命名，自动获取，模块配置不需要填
@@ -20,8 +22,16 @@ interface appConfig {
       show: boolean,
       name: string
     },
-    data?: Object
-  }>
+    data?: any,
+    copy?: {
+      id: string  // 复制模块的id
+    },
+    originData?: any, // 自动解析模块中的data，模块配置不需要填
+    methods?: any,  // 自动解析模块中的methods, 模块配置不需要填
+    self?: any, // 组件实例 配置不需要填
+    render?: any, // 组件的渲染函数 配置中不需要填
+  }>,
+  
 }
 
 class compiler {
@@ -40,11 +50,38 @@ class compiler {
         this.apps.push(config);
       }
     });
+    this.dealCopy();
+    this.parsing();
     this.getRouter();
     this.getMenu();
-    this.parsing();
-    console.log("路由", this.router);
-    console.log("菜单", this.menus);
+    // console.log("路由", this.router);
+    // console.log("菜单", this.menus);
+  }
+
+  // 处理复制模块的情况
+  dealCopy() {
+    this.apps.map((appItem: any) => {
+      let { pages } = appItem;
+      for (let i = 0; i <= pages.length - 1; i++) {
+        if(typeof pages[i].copy != 'undefined' && typeof pages[i].copy?.id != 'undefined') {
+          for(let j = 0; j <= pages.length - 1; j++) {
+            if(pages[i].copy?.id === pages[j].id) {
+              console.log(pages[j]);
+              Object.keys(pages[j]).forEach(k => {
+                if(typeof pages[i][k] == 'undefined') {
+                  console.log(pages[i]);
+                  console.log(k);
+                  // Object.assign(pages[i], {
+                  //   [k]:  pages[j][k]
+                  // })
+                  // console.log(pages[i]);
+                }
+              })
+            }
+          }
+        }
+      }
+    })
   }
 
   getCharCount(str: string, char: string) {
@@ -63,16 +100,43 @@ class compiler {
         if (appItem.parentName === routerItem.name) {
           var subRouter = []
           for (let i in pages) {
-            subRouter.push({
-              path: routerItem.path + '/' + appItem.id + '/' + pages[i].id,
-              name: pages[i].name,
-              meta: { template: pages[i].type ?? 'default' },
-              component: {
-                template: '<div>455</div>',
-                data: () => {
-                  return pages[i].data;
+            // 生成组件
+            @Component({})
+            class page extends tsx.Component<any> {
+              created() {
+                // 获取当前页面的组件实例
+                pages[i].self = this;
+                // 配置文件拼接的data传入到组件内部
+                Object.assign(this, pages[i].data)
+                // 原始data传入到组件内部并将this指向为组件实例
+                if( typeof pages[i].originData === 'function') {
+                  let originData = pages[i].originData.call(this);
+                  originData.__proto__ = this;
+                  Object.assign(this, originData)
+                } else if(typeof pages[i].originData === 'object') {
+                  let originData = pages[i].originData;
+                  originData.__proto__ = this;
+                  Object.assign(this, originData)
+                }
+                // methods传入到组件内部，并将this指向为组件实例
+                if(typeof pages[i].methods != 'undefined') {
+                  Object.keys(pages[i].methods).forEach(k => {
+                    if(typeof pages[i].methods[k] == 'function') {
+                      pages[i].methods[k] = pages[i].methods[k].bind( pages[i].self)
+                    }
+                  })
+                  Object.assign(this, pages[i].methods)
                 }
               }
+              render(h: any) {
+                return typeof pages[i].render == 'undefined' ? '' : pages[i].render.call(this, h);
+              }
+            } 
+            subRouter.push({
+              path: (routerItem.path + '/' + appItem.id + '/' + pages[i].id) + (pages[i].type == 'form' ? '/:id' : ''),
+              name: pages[i].name,
+              meta: { template: pages[i].type ?? 'default' },
+              component: page
             })
           }
           let router = {
@@ -149,10 +213,28 @@ class compiler {
         if (typeof data !== 'object') {
           break;
         }
-        var selfModule = {};   // 模块自身指令
+        var selfModule: any = {};   // 模块自身指令
         var publicModule = {};  // 公共指令实现
         try {
           selfModule = require('@/app/' + appItem.appName + '/' + appItem.pages[i].id );
+          if(typeof selfModule.default != 'undefined') {
+            Object.assign(selfModule, selfModule.default)
+          }
+          if(typeof selfModule.data != 'undefined') {
+            Object.assign(appItem.pages[i], {
+              originData: selfModule.data
+            })
+          }
+          if(typeof selfModule.methods != 'undefined') {
+            Object.assign(appItem.pages[i], {
+              methods: selfModule.methods
+            })
+          }
+          if(typeof selfModule.render != 'undefined') {
+            Object.assign(appItem.pages[i], {
+              render: selfModule.render
+            })
+          }
         } catch (error) {
         }
         try {
@@ -172,8 +254,7 @@ class compiler {
         } catch (error) {
           console.error("加载公共指令出现了未知问题", error);
         }
-        this.parsingData(data, selfModule, publicModule);
-        console.log(data);
+        this.parsingData(data, selfModule, publicModule, appItem.pages[i]);
       }
     })
   }
@@ -183,27 +264,32 @@ class compiler {
    * @param data 
    * @param path 目标页面的路径
    */
-  public parsingData(data: any, selfModule: any, publicModule: any) {
+  public parsingData(data: any, selfModule: any, publicModule: any, page: any) {
     Object.keys(data).forEach((item: string) => {
       let value = data[item];
       if (typeof value == 'string' && value.indexOf('@') != -1) {
         var funName = ''; // 函数名
         var params: string[] = []; // 参数
-        // 带参数
+        // 解析函数名和参数数组
         if (value.indexOf("('") != -1) {
           funName = value.substring(1, value.indexOf('('));
-          params = value.substring(value.indexOf("(") + 2, value.indexOf(")") - 1).split(',');
+          params = value.substring(value.indexOf("(") + 1, value.indexOf(")")).split(",");
+          for(let i in params) {
+            params[i] = params[i].replace(/\'?\s*/g,"");
+          }
         } else {
           funName = value.substring(1, value.length );
         }
-       
+
+        funName = funName.replace(/\'?\s*/g,"");
+        
         var temp = false;
         // 先查询与页面标识同名的文件是否存在该函数
         Object.keys(selfModule).forEach((key: string) => {
           if(key === funName) {
             Object.assign(data, {
               [item]:  function (...p: any) {
-                return selfModule[key].apply(this, [...params, ...p])
+                return selfModule[key].apply(page.self, [...params, ...p])
               }
             })
             temp = true;
@@ -225,7 +311,7 @@ class compiler {
       }
       if (value instanceof Object) {
         // console.log(value)
-        this.parsingData(value,  selfModule, publicModule);
+        this.parsingData(value,  selfModule, publicModule, page);
       }
     })
   }

@@ -1,12 +1,12 @@
 {
-  "name": "用户管理",
-  "id": "member",
+  "name": "审批管理",
+  "id": "approveTest",
   "parentName": "系统",
   "parentId": "system",
   "pages": [
     {
       "id": "list",
-      "name": "用户列表",
+      "name": "审批管理列表",
       "type": "list",
       "menu": {
         "show": true,
@@ -18,7 +18,7 @@
         "searchForm": [
           {
             "type": "select",
-            "selectOptions": "@approveIdSelect",
+            "selectOptions": "@select('/activity/allApprove','approveName','id')",
             "label": "审批表单名称",
             "name": "approveId"
           }
@@ -26,7 +26,7 @@
         "columns": [
           {
             "title": "审批表单名称",
-            "dataIndex": "activityId",
+            "dataIndex": "approveName",
             "width": 150
           },
           {
@@ -42,7 +42,9 @@
           },
           {
             "title": "操作",
-            "scopedSlots": { "customRender": "action" },
+            "scopedSlots": {
+              "customRender": "action"
+            },
             "see": "@see",
             "del": true
           }
@@ -51,8 +53,69 @@
     },
     {
       "id": "form",
-      "name": "用户",
-      "type": "form"
+      "name": "（创建表单审批流）",
+      "type": "form",
+      "data": {
+        "createApi": "@post('/activity/deploy')",
+        "updateApi": "@post('/activity/deploy')",
+        "detailApi": "@get('/activity/selectById')",
+        "deleteApi": "@get('/activity/delete')",
+        "formOption": [
+          {
+            "type": "select",
+            "value": "",
+            "label": "审批表单名称",
+            "name": "worksId",
+            "required": true,
+            "selectOptions": "@select('/activity/worksList', 'approveName', 'id')",
+            "selectOptionsCallback": "@worksIdSelectOptionsCallback",
+            "width": 8,
+            "supplyParam": [
+              {
+                "type": "select",
+                "name": "processId"
+              }
+            ],
+            "loading": true,
+            "disabled": [
+              "update"
+            ]
+          },
+          {
+            "type": "select",
+            "value": "",
+            "label": "复制审核流程",
+            "name": "copyFlow",
+            "selectOptions": "@select('/activity/getApproveList','activityId','id')",
+            "hide": [
+              "detail",
+              "update"
+            ],
+            "onChange": "@copyFlowOnChange"
+          },
+          {
+            "type": "customer",
+            "value": "",
+            "name": "",
+            "label": "审批流设置",
+            "width": 8,
+            "render": "@customerRender"
+          },
+          {
+            "type": "textarea",
+            "value": "",
+            "label": "审批说明",
+            "name": "describe",
+            "width": 18
+          }
+        ]
+      }
+    },
+    {
+      "id": "detail",
+      "copy": {
+        "id": "form"
+      }
     }
   ]
 }

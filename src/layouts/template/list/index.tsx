@@ -118,6 +118,14 @@ export default class extends tsx.Component<any> {
     })
   }
 
+  public titleClick({ key }: never) {
+    if (this.active[0] !== key) {
+      this.$router.push({
+        path: this.menus[key].path,
+      });
+    }
+  }
+
   protected render() {
     const loadData = async (parameter: Object) => {
       const emptyTableData = {
@@ -157,7 +165,7 @@ export default class extends tsx.Component<any> {
     return (
       <div class="listView">
         <div class="top-view">
-          <a-menu mode="horizontal" v-model={this.active} multiple={false} selectable={false}>
+          <a-menu mode="horizontal" v-model={this.active} multiple={false} selectable={false}  onClick={this.titleClick}>
             {
               this.menus.map((item, index) => {
                 return <a-menu-item key={index}>{item.name}</a-menu-item>
@@ -203,7 +211,7 @@ export default class extends tsx.Component<any> {
                               item.selectOptions = res;
                             })
                           } catch (error) {
-                            console.error("渲染选择框选项的过程中出现了问题", error);
+                            console.warn("渲染选择框选项的过程中出现了问题", error);
                           }
                         })()
                     }
@@ -239,7 +247,7 @@ export default class extends tsx.Component<any> {
           scopedSlots={{
             action: (props: any, record: any) => {
               return <span class="action">
-                <a-icon type="unordered-list" class="see" onClick={() => typeof this.columns[this.columns.length - 1].see == 'function' && this.columns[this.columns.length - 1].see.bind(this, record)} />
+                <a-icon type="unordered-list" class="see" onClick={() => typeof this.columns[this.columns.length - 1].see == 'function' && this.columns[this.columns.length - 1].see.call(this, record)} />
                 <a-divider type="vertical" />
                 {this.columns[this.columns.length - 1].del && <a-popconfirm title="确定删除这条记录吗？" okText="确定" cancelText="取消" placement="right" on={{ confirm: this.deleteThis.bind(this, record.id) }}>
                   <a-icon type="delete" class="delete" />

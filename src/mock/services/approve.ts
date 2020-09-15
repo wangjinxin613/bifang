@@ -4,6 +4,7 @@ import Mock from 'mockjs'
 Mock.mock(/\/mock\/activity\/getApproveList/, 'get', {
   'list|10': [{
     'id|+1': 0,
+    'approveName|+1': ['采购订单','采购合同', '订单验收'],
     'activityId|+1': ['采购订单','采购合同', '订单验收'],
     'roleListFlow': {
       0: ['销售'],
