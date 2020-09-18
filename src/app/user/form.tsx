@@ -94,6 +94,7 @@ export default {
       })
     },
     loadDataAfter(this: any, res: any) {
+      console.log(99998);
       var list: Array<approveSettingItem> = [];
       Object.keys(res.details).forEach((index: string) => {
         let item = res.details[index];

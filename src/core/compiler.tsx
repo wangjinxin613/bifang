@@ -7,6 +7,7 @@ import { manageRouter, templateView } from '../config/router.config';
 import menuConfig from '../config/menu.config';
 import { Vue, Component, Ref } from 'vue-property-decorator'
 import * as tsx from "vue-tsx-support";
+import { deepCopy } from '@/utils/util';
 
 interface appConfig {
   appName: string,  // 模块文件夹的命名，自动获取，模块配置不需要填
@@ -31,7 +32,6 @@ interface appConfig {
     self?: any, // 组件实例 配置不需要填
     render?: any, // 组件的渲染函数 配置中不需要填
   }>,
-  
 }
 
 class compiler {
@@ -39,17 +39,20 @@ class compiler {
   public apps: Array<appConfig> = [];   // 所有的模块
   public router: Array<RouteConfig> = [];   // 路由
   public menus: Array<any> = [];  // 菜单
+  public originApps: Array<appConfig> = []; // 原始的模块配置，未做任何处理的
 
   constructor() {
     const app = require.context('@/app/', true, /config.json$/);
     app.keys().forEach((filePath) => {
-      if(this.getCharCount(filePath, '/') === 2) {
+      if (this.getCharCount(filePath, '/') === 2) {
         let config: appConfig = app(filePath);
         var appName = filePath.substring(filePath.indexOf('/') + 1, filePath.indexOf('/', filePath.indexOf('/') + 1));
         config.appName = appName;
-        this.apps.push(config);
+        this.apps.push(deepCopy(config));
+        this.originApps.push(deepCopy(config));
       }
     });
+
     this.dealCopy();
     this.parsing();
     this.getRouter();
@@ -60,28 +63,36 @@ class compiler {
 
   // 处理复制模块的情况
   dealCopy() {
-    this.apps.map((appItem: any) => {
+    this.apps.map((appItem: any, key) => {
       let { pages } = appItem;
       for (let i = 0; i <= pages.length - 1; i++) {
-        if(typeof pages[i].copy != 'undefined' && typeof pages[i].copy?.id != 'undefined') {
-          for(let j = 0; j <= pages.length - 1; j++) {
-            if(pages[i].copy?.id === pages[j].id) {
-              console.log(pages[j]);
-              Object.keys(pages[j]).forEach(k => {
-                if(typeof pages[i][k] == 'undefined') {
-                  console.log(pages[i]);
-                  console.log(k);
-                  // Object.assign(pages[i], {
-                  //   [k]:  pages[j][k]
-                  // })
-                  // console.log(pages[i]);
-                }
+        if (typeof pages[i].extend == 'undefined' && typeof pages[i].extend?.id == 'undefined') {
+          continue;
+        }
+        let currentPage = pages[i];
+        let parentPage = this.findParentPage(currentPage, key);
+        if (currentPage.extend?.id === parentPage.id) {
+          Object.keys(parentPage).forEach(k => {
+            if (typeof currentPage[k] == 'undefined' && k != 'self') {
+              Object.assign(currentPage, {
+                [k]: parentPage[k]
               })
             }
-          }
+          })
         }
       }
     })
+  }
+
+  // 找到父级页面
+  findParentPage(currentPage: any, key: number) {
+    for (let j = 0; j <= this.originApps[key].pages.length - 1; j++) {
+      let parentPage: any = this.originApps[key].pages[j];
+      if (currentPage.extend?.id === parentPage.id) {
+        return parentPage;
+      }
+    }
+    return {};
   }
 
   getCharCount(str: string, char: string) {
@@ -109,20 +120,20 @@ class compiler {
                 // 配置文件拼接的data传入到组件内部
                 Object.assign(this, pages[i].data)
                 // 原始data传入到组件内部并将this指向为组件实例
-                if( typeof pages[i].originData === 'function') {
+                if (typeof pages[i].originData === 'function') {
                   let originData = pages[i].originData.call(this);
                   originData.__proto__ = this;
                   Object.assign(this, originData)
-                } else if(typeof pages[i].originData === 'object') {
+                } else if (typeof pages[i].originData === 'object') {
                   let originData = pages[i].originData;
                   originData.__proto__ = this;
                   Object.assign(this, originData)
                 }
                 // methods传入到组件内部，并将this指向为组件实例
-                if(typeof pages[i].methods != 'undefined') {
+                if (typeof pages[i].methods != 'undefined') {
                   Object.keys(pages[i].methods).forEach(k => {
-                    if(typeof pages[i].methods[k] == 'function') {
-                      pages[i].methods[k] = pages[i].methods[k].bind( pages[i].self)
+                    if (typeof pages[i].methods[k] == 'function') {
+                      pages[i].methods[k] = pages[i].methods[k].bind(pages[i].self)
                     }
                   })
                   Object.assign(this, pages[i].methods)
@@ -131,7 +142,7 @@ class compiler {
               render(h: any) {
                 return typeof pages[i].render == 'undefined' ? '' : pages[i].render.call(this, h);
               }
-            } 
+            }
             subRouter.push({
               path: (routerItem.path + '/' + appItem.id + '/' + pages[i].id) + (pages[i].type == 'form' ? '/:id' : ''),
               name: pages[i].name,
@@ -209,40 +220,70 @@ class compiler {
   public parsing() {
     this.apps.map(appItem => {
       for (let i in appItem.pages) {
-        let { data } = appItem.pages[i];
+        let page: any = appItem.pages[i];
+        let { data } = page;
         if (typeof data !== 'object') {
-          break;
+          continue;
         }
-        var selfModule: any = {};   // 模块自身指令
+        var selfModule: any = {};   // 页面自身指令
+        var parentModule: any = {};   // 父级指令
         var publicModule = {};  // 公共指令实现
+        // 页面本身
         try {
-          selfModule = require('@/app/' + appItem.appName + '/' + appItem.pages[i].id );
-          if(typeof selfModule.default != 'undefined') {
+          selfModule = require('@/app/' + appItem.appName + '/' + appItem.pages[i].id);
+          if (typeof selfModule.default != 'undefined') {
             Object.assign(selfModule, selfModule.default)
           }
-          if(typeof selfModule.data != 'undefined') {
+          if (typeof selfModule.data != 'undefined') {
             Object.assign(appItem.pages[i], {
               originData: selfModule.data
             })
           }
-          if(typeof selfModule.methods != 'undefined') {
+          if (typeof selfModule.methods != 'undefined') {
             Object.assign(appItem.pages[i], {
               methods: selfModule.methods
             })
           }
-          if(typeof selfModule.render != 'undefined') {
+          if (typeof selfModule.render != 'undefined') {
             Object.assign(appItem.pages[i], {
               render: selfModule.render
             })
           }
         } catch (error) {
         }
+        // 父级页面
+        if(typeof page.extend != 'undefined' && typeof page.extend?.id != 'undefined') {
+          try {
+            parentModule = require('@/app/' + appItem.appName + '/' + page.extend.id);
+            if (typeof parentModule.default != 'undefined') {
+              Object.assign(parentModule, parentModule.default)
+            }
+            if (typeof parentModule.data != 'undefined') {
+              Object.assign(appItem.pages[i], {
+                originData: selfModule.data
+              })
+            }
+            if (typeof selfModule.methods != 'undefined') {
+              Object.assign(appItem.pages[i], {
+                methods: selfModule.methods
+              })
+            }
+            if (typeof selfModule.render != 'undefined') {
+              Object.assign(appItem.pages[i], {
+                render: selfModule.render
+              })
+            }
+          } catch (error) {
+          }
+        }
+        
+        // 公共
         try {
           const app = require.context('@/utils/public/', true, /.ts$/);
           app.keys().forEach((filePath) => {
             let modules = app(filePath);
             Object.keys(modules).forEach(key => {
-              if(publicModule.hasOwnProperty(key)) {
+              if (publicModule.hasOwnProperty(key)) {
                 console.error("公共指令中出现了重复的指令", "指令名：" + key, "路径：" + filePath);
               } else {
                 Object.assign(publicModule, {
@@ -254,7 +295,7 @@ class compiler {
         } catch (error) {
           console.error("加载公共指令出现了未知问题", error);
         }
-        this.parsingData(data, selfModule, publicModule, appItem.pages[i]);
+        this.parsingData(data, selfModule, parentModule ,publicModule, appItem.pages[i]);
       }
     })
   }
@@ -264,7 +305,7 @@ class compiler {
    * @param data 
    * @param path 目标页面的路径
    */
-  public parsingData(data: any, selfModule: any, publicModule: any, page: any) {
+  public parsingData(data: any, selfModule: any,parentModule: any, publicModule: any, page: any) {
     Object.keys(data).forEach((item: string) => {
       let value = data[item];
       if (typeof value == 'string' && value.indexOf('@') != -1) {
@@ -274,32 +315,46 @@ class compiler {
         if (value.indexOf("('") != -1) {
           funName = value.substring(1, value.indexOf('('));
           params = value.substring(value.indexOf("(") + 1, value.indexOf(")")).split(",");
-          for(let i in params) {
-            params[i] = params[i].replace(/\'?\s*/g,"");
+          for (let i in params) {
+            params[i] = params[i].replace(/\'?\s*/g, "");
           }
         } else {
-          funName = value.substring(1, value.length );
+          funName = value.substring(1, value.length);
         }
 
-        funName = funName.replace(/\'?\s*/g,"");
-        
+        funName = funName.replace(/\'?\s*/g, "");
+
         var temp = false;
-        // 先查询与页面标识同名的文件是否存在该函数
+        // 查询与页面标识同名的文件是否存在该函数
         Object.keys(selfModule).forEach((key: string) => {
-          if(key === funName) {
+          if (key === funName) {
             Object.assign(data, {
-              [item]:  function (...p: any) {
+              [item]: function (...p: any) {
                 return selfModule[key].apply(page.self, [...params, ...p])
               }
             })
             temp = true;
           }
         })
-        if(!temp) {
-          Object.keys(publicModule).forEach((key: string) => {
-            if(key === funName) {
+        // 查询继承的父级页面是否存在该函数
+        if (!temp && typeof page.extend != 'undefined' && typeof page.extend?.id != 'undefined') {
+          Object.keys(parentModule).forEach((key: string) => {
+            if (key === funName) {
               Object.assign(data, {
-                [item]:  function (...p: any) {
+                [item]: function (...p: any) {
+                  return parentModule[key].apply(page.self, [...params, ...p])
+                }
+              })
+              temp = true;
+            }
+          })
+        }
+        // 查询是否存在公共函数
+        if (!temp) {
+          Object.keys(publicModule).forEach((key: string) => {
+            if (key === funName) {
+              Object.assign(data, {
+                [item]: function (...p: any) {
                   return publicModule[key].apply(this, [...params, ...p])
                 }
               })
@@ -307,11 +362,11 @@ class compiler {
             }
           })
         }
-        if(!temp) data[item] = () => {}
+        if (!temp) data[item] = () => { }
       }
       if (value instanceof Object) {
         // console.log(value)
-        this.parsingData(value,  selfModule, publicModule, page);
+        this.parsingData(value, selfModule,parentModule, publicModule, page);
       }
     })
   }
