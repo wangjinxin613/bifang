@@ -9,6 +9,9 @@ export default {
       flowList: [],
     }
   },
+  render(){
+    return '你瞅啥';
+  },
   worksIdSelectOptionsCallback(res: any, apiData: any) {
     res.push({
       label: apiData.activityId,

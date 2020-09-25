@@ -1,11 +1,9 @@
-
-
-console.log("9899595");
+require( './style.less');
 
 export default {
 
-  create() {
-    require( './style.less');
+  created() {
+
   },
   
   data()  {

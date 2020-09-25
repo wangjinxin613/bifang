@@ -38,7 +38,7 @@ export default class extends tsx.Component<Vue> {
 
   @Watch('flowList', { deep: true, immediate: true })
   public watchFlowList(newValue: any) {
-    console.log("flowList发生变化", newValue);
+    // console.log("flowList发生变化", newValue);
     this.list = newValue;
   }
 
