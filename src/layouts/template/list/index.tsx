@@ -2,7 +2,7 @@ import { Vue, Component, Ref } from 'vue-property-decorator'
 import * as tsx from "vue-tsx-support";
 import '@/assets/style/listView.less';
 import { STable } from '@/components';
-import { formItem } from '@/utils/interface'
+import { formItem, listModel } from '@/utils/interface'
 import { menuConfig } from "@/router/index";
 import { RouteConfig } from "vue-router";
 
@@ -11,7 +11,7 @@ import { RouteConfig } from "vue-router";
 })
 export default class extends tsx.Component<any> {
 
-  @Ref() content: any;
+  @Ref() content!: listModel;
   @Ref() table: any;
 
   public searchForm = [];  // 搜索表单

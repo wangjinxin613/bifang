@@ -8,7 +8,7 @@ import menuConfig from '../config/menu.config';
 import { Vue, Component, Ref } from 'vue-property-decorator'
 import * as tsx from "vue-tsx-support";
 import { deepCopy } from '@/utils/util';
-import app from '@/store/modules/app';
+import { formModel, listModel } from '@/utils/interface';
 
 interface appConfig {
   appName: string,  // 模块文件夹的命名，自动获取，模块配置不需要填
@@ -24,7 +24,7 @@ interface appConfig {
       show: boolean,
       name: string
     },
-    data?: any,
+    data?: formModel | listModel,
     copy?: {
       id: string  // 复制模块的id
     },
@@ -143,7 +143,6 @@ class compiler {
                 if(typeof page.selfModule.beforeCreate === 'function' ) {
                   page.selfModule.beforeCreate();
                 }
-                console.log(page.selfModule);
               }
               created() {
                 if(typeof page.selfModule.created === 'function' ) {

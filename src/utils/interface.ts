@@ -26,7 +26,7 @@ export interface formItem {
   width?: number, // 栅栏宽度 1~24的整数，默认为8
   mode?: string,  // select的mode
   render?: any,  // customer模式时的自定义render
-  supplyParam?: [{
+  supplyParam?: [{  // 额外要上传数据的字段
     type?: string,
     name: string,
     selectOptions?: Array<any>
@@ -60,4 +60,14 @@ export interface formModel {
   getCallback: Function,  // detailApi获取数据成功后的回调函数
   resetForm: Function,  // 重置表单的回调函数
   deleteCallback: Function
+}
+
+// 列表模板对外暴露的属性
+export interface listModel {
+  searchForm?: Array<formItem>, // 搜索表单项
+  columns?: Array<any> | any, // 表格的字段配置项
+  api: Function, // 获取列表的接口
+  deleteApi?: Function, // 删除某行数据的接口函数
+  customCreateBtn?: any,  // 自定义创建按钮
+  setParameter?: Function,  // 获取列表接口设置参数
 }

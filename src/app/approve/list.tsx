@@ -1,9 +1,8 @@
-require( './style.less');
 
 export default {
 
   created() {
-
+    require('./style.less')
   },
   
   data()  {

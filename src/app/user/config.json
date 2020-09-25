@@ -18,9 +18,14 @@
         "searchForm": [
           {
             "type": "select",
-            "selectOptions": "@select('/activity/allApprove','approveName','id')",
-            "label": "审批表单名称",
-            "name": "approveId"
+            "selectOptions": "@select('/user/getRoleName','roleName','id')",
+            "label": "所属角色",
+            "name": "roleName"
+          },
+          {
+            "type": "input",
+            "label": "姓名",
+            "name": "roleName"
           }
         ],
         "columns": [
