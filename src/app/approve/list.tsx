@@ -1,5 +1,13 @@
 
+
+console.log("9899595");
+
 export default {
+
+  create() {
+    require( './style.less');
+  },
+  
   data()  {
     return {
       get customCreateBtn () {

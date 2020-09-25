@@ -40,5 +40,10 @@
     "src/components/Table/index.js",
     "src",
     "tests/**/*.tsx"
+  ],
+  "exclude": [
+    "**/**/*.md",
+    "**/*.md",
+    ".md"
   ]
 }

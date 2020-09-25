@@ -294,7 +294,7 @@ export default class extends tsx.Component<Vue> {
           <div class="form">
             <a-skeleton loading={this.pageLoading} active>
               {
-                !this.pageLoading &&
+                // !this.pageLoading &&
                 <a-form layout="horizontal" form={this.formModel} >
                   <a-row gutter={60} style="width: 100%;">
                     {
@@ -305,7 +305,7 @@ export default class extends tsx.Component<Vue> {
                           formItem = <a-input
                             placeholder={'请输入' + item.label}
                             v-decorator={[
-                              'test',
+                              item.name,
                               {
                                 rules: [{ required: item.required, message: '请输入' + item.label + '!' }, ...(!item.validator ? [] : item.validator)],
                                 initialValue: typeof item.value == 'function' ? item.value(item, index, this.formOption) : item.value,

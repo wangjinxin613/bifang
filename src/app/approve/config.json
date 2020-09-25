@@ -1,6 +1,6 @@
 {
-  "name": "用户管理",
-  "id": "user",
+  "name": "审批管理",
+  "id": "approveTest",
   "parentName": "系统",
   "parentId": "system",
   "pages": [

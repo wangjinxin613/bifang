@@ -31,7 +31,7 @@ interface appConfig {
     methods?: any,  // 自动解析模块中的methods, 模块配置不需要填
     self?: any, // 组件实例 配置不需要填
     render?: any, // 组件的渲染函数 配置中不需要填
-  }>,
+  }>, 
 }
 
 class compiler {
@@ -42,21 +42,25 @@ class compiler {
   public originApps: Array<appConfig> = []; // 原始的模块配置，未做任何处理的
 
   constructor() {
-    const app = require.context('@/app/', true, /config.json$/);
-    app.keys().forEach((filePath) => {
-      if (this.getCharCount(filePath, '/') === 2) {
-        let config: appConfig = app(filePath);
-        var appName = filePath.substring(filePath.indexOf('/') + 1, filePath.indexOf('/', filePath.indexOf('/') + 1));
-        config.appName = appName;
-        this.apps.push(deepCopy(config));
-        this.originApps.push(deepCopy(config));
-      }
-    });
+    try {
+      const app = require.context('@/app/', true, /config.json$/);
+      app.keys().forEach((filePath) => {
+        if (this.getCharCount(filePath, '/') === 2) {
+          let config: appConfig = app(filePath);
+          var appName = filePath.substring(filePath.indexOf('/') + 1, filePath.indexOf('/', filePath.indexOf('/') + 1));
+          config.appName = appName;
+          this.apps.push(deepCopy(config));
+          this.originApps.push(deepCopy(config));
+        }
+      });
 
-    this.dealCopy();
-    this.parsing();
-    this.getRouter();
-    this.getMenu();
+      this.dealCopy();
+      this.parsing();
+      this.getRouter();
+      this.getMenu(); 
+    } catch (error) {
+
+    }
     // console.log("路由", this.router);
     // console.log("菜单", this.menus);
   }
@@ -114,11 +118,11 @@ class compiler {
             // 生成组件
             @Component({})
             class page extends tsx.Component<any> {
-              created() {
+              beforeCreate() {
                 // 获取当前页面的组件实例
                 pages[i].self = this;
                 // 配置文件拼接的data传入到组件内部
-                Object.assign(this, pages[i].data)
+                Object.assign(this, deepCopy( pages[i].data))
                 // 原始data传入到组件内部并将this指向为组件实例
                 if (typeof pages[i].originData === 'function') {
                   let originData = pages[i].originData.call(this);
@@ -131,11 +135,11 @@ class compiler {
                 }
                 // methods传入到组件内部，并将this指向为组件实例
                 if (typeof pages[i].methods != 'undefined') {
-                  Object.keys(pages[i].methods).forEach(k => {
-                    if (typeof pages[i].methods[k] == 'function') {
-                      pages[i].methods[k] = pages[i].methods[k].bind(pages[i].self)
-                    }
-                  })
+                  // Object.keys(pages[i].methods).forEach(k => {
+                  //   if (typeof pages[i].methods[k] == 'function') {
+                  //     pages[i].methods[k] =  pages[i].methods[k]
+                  //   }
+                  // })
                   Object.assign(this, pages[i].methods)
                 }
               }
@@ -252,7 +256,7 @@ class compiler {
         } catch (error) {
         }
         // 父级页面
-        if(typeof page.extend != 'undefined' && typeof page.extend?.id != 'undefined') {
+        if (typeof page.extend != 'undefined' && typeof page.extend?.id != 'undefined') {
           try {
             parentModule = require('@/app/' + appItem.appName + '/' + page.extend.id);
             if (typeof parentModule.default != 'undefined') {
@@ -263,20 +267,20 @@ class compiler {
                 originData: selfModule.data
               })
             }
-            if (typeof selfModule.methods != 'undefined') {
+            if (typeof parentModule.methods != 'undefined') {
               Object.assign(appItem.pages[i], {
-                methods: selfModule.methods
+                methods: parentModule.methods
               })
             }
-            if (typeof selfModule.render != 'undefined') {
+            if (typeof parentModule.render != 'undefined') {
               Object.assign(appItem.pages[i], {
-                render: selfModule.render
+                render: parentModule.render
               })
             }
           } catch (error) {
           }
         }
-        
+
         // 公共
         try {
           const app = require.context('@/utils/public/', true, /.ts$/);
@@ -295,7 +299,7 @@ class compiler {
         } catch (error) {
           console.error("加载公共指令出现了未知问题", error);
         }
-        this.parsingData(data, selfModule, parentModule ,publicModule, appItem.pages[i]);
+        this.parsingData(data, selfModule, parentModule, publicModule, appItem.pages[i]);
       }
     })
   }
@@ -305,7 +309,7 @@ class compiler {
    * @param data 
    * @param path 目标页面的路径
    */
-  public parsingData(data: any, selfModule: any,parentModule: any, publicModule: any, page: any) {
+  public parsingData(data: any, selfModule: any, parentModule: any, publicModule: any, page: any) {
     Object.keys(data).forEach((item: string) => {
       let value = data[item];
       if (typeof value == 'string' && value.indexOf('@') != -1) {
@@ -366,7 +370,7 @@ class compiler {
       }
       if (value instanceof Object) {
         // console.log(value)
-        this.parsingData(value, selfModule,parentModule, publicModule, page);
+        this.parsingData(value, selfModule, parentModule, publicModule, page);
       }
     })
   }
