@@ -8,7 +8,7 @@ import menuConfig from '../config/menu.config';
 import { Vue, Component, Ref } from 'vue-property-decorator'
 import * as tsx from "vue-tsx-support";
 import { deepCopy } from '@/utils/util';
-import { formModel, listModel } from '@/utils/interface';
+import { formModel, listModel, bfConfig as bfConfigInterface } from '@/utils/interface';
 
 interface appConfig {
   appName: string,  // 模块文件夹的命名，自动获取，模块配置不需要填
@@ -65,6 +65,10 @@ class compiler {
     }
     // console.log("路由", this.router);
     // console.log("菜单", this.menus);
+
+    // 加载项目配置文件
+  
+  
   }
 
   // 处理复制模块的情况
@@ -371,3 +375,13 @@ class compiler {
 }
 
 export default compiler;
+
+
+
+var bfOriginConfig : bfConfigInterface = {};
+try {
+  bfOriginConfig = require('@/bf.config.js');
+} catch (error) {
+  
+}
+export const bfConfig = bfOriginConfig;

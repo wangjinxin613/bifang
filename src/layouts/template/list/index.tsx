@@ -5,6 +5,8 @@ import { STable } from '@/components';
 import { formItem, listModel } from '@/utils/interface'
 import { menuConfig } from "@/router/index";
 import { RouteConfig } from "vue-router";
+import moment from 'moment';
+import { bfConfig } from '../../../core/compiler';
 
 @Component({
   components: { stable: STable }
@@ -18,6 +20,9 @@ export default class extends tsx.Component<any> {
   public columns: Array<any> = []; // 表格项
   public queryParam = {};  // 检索字段
   public customCreateBtn = '';  // 自定义新建按钮
+  public get dateFormat() {
+    return bfConfig.dateFormat;
+  }
 
   // 三级菜单列表
   get menus() {
@@ -61,10 +66,14 @@ export default class extends tsx.Component<any> {
     for (let i in this.searchForm) {
       let item: any = this.searchForm[Number(i)];
       if (item.type == 'dateRange' && item.value && item.name) {
-        // if (item.value[0] instanceof moment && item.value[1] instanceof moment) {
-        //   queryParam[item.name[0]] = new Date(item.value[0].format('YYYY-MM-DD 00:00:00')).getTime() / 1000;
-        //   queryParam[item.name[1]] = new Date(item.value[1].format('YYYY-MM-DD 23:59:59')).getTime() / 1000;
-        // }
+        if (Array(item.value) && item.value.length == 2) {
+          if (Array(item.name) && item.name.length == 2) {
+            queryParam[item.name[0]] = item.value[0];
+            queryParam[item.name[1]] = item.value[1];
+          } else if (typeof item.name == 'string') {
+            queryParam[item.name] = item.value;
+          }
+        }
       } else {
         if (item.value && item.name) {
           queryParam[item.name] = item.value;
@@ -165,7 +174,7 @@ export default class extends tsx.Component<any> {
     return (
       <div class="listView">
         <div class="top-view">
-          <a-menu mode="horizontal" v-model={this.active} multiple={false} selectable={false}  onClick={this.titleClick}>
+          <a-menu mode="horizontal" v-model={this.active} multiple={false} selectable={false} onClick={this.titleClick}>
             {
               this.menus.map((item, index) => {
                 return <a-menu-item key={index}>{item.name}</a-menu-item>
@@ -205,7 +214,7 @@ export default class extends tsx.Component<any> {
                         item.selectOptions?.map((symbol: any) => (
                           <a-select-option value={symbol.value}>{symbol.label}</a-select-option>
                         )) : (typeof item.selectOptions === 'function') &&
-                        (() => { 
+                        (() => {
                           try {
                             item.selectOptions().then((res: any) => {
                               item.selectOptions = res;
@@ -216,6 +225,18 @@ export default class extends tsx.Component<any> {
                         })()
                     }
                   </a-select>
+                )
+              } else if (item.type == 'date') {
+                searchFrom = (
+                  <a-date-picker v-model={item.value} valueFormat={this.dateFormat == 'longTimeStamp' ? 'x' : this.dateFormat == 'string' ? 'yyyy-MM-DD' : 'X'} />
+                )
+              } else if (item.type == 'dateRange') {
+                searchFrom = (
+                  <a-range-picker v-model={item.value} valueFormat={this.dateFormat == 'longTimeStamp' ? 'x' : this.dateFormat == 'string' ? 'yyyy-MM-DD' : 'X'} />
+                )
+              } else if (item.type == 'number') {
+                searchFrom = (
+                  <a-input-number v-model={item.value} min={item.min} max={item.max} onChange={(value: any, option: any) => { typeof item.onChange == 'function' && item.onChange.call(this, value, { key: index, item: item, searchForm: this.searchForm, event: event, label: (event?.target as any).textContent }) }} />
                 )
               }
               return (
@@ -246,10 +267,29 @@ export default class extends tsx.Component<any> {
           // expandedRowRender="pageMeta.expandedRowRender"
           scopedSlots={{
             action: (props: any, record: any) => {
+              var { see, edit, del } = this.columns[this.columns.length - 1];
               return <span class="action">
-                <a-icon type="unordered-list" class="see" onClick={() => typeof this.columns[this.columns.length - 1].see == 'function' && this.columns[this.columns.length - 1].see.call(this, record)} />
-                <a-divider type="vertical" />
-                {this.columns[this.columns.length - 1].del && <a-popconfirm title="确定删除这条记录吗？" okText="确定" cancelText="取消" placement="right" on={{ confirm: this.deleteThis.bind(this, record.id) }}>
+                {
+                  see &&
+                  <a-icon type="unordered-list" class="see" onClick={() => typeof see == 'function' ? see.call(this, record) :
+                    this.$router.push('./detail/' + record.id)
+                  } />
+                }
+                {
+                  see && edit &&
+                  <a-divider type="vertical" />
+                }
+                {
+                  edit &&
+                  <a-icon type="edit" class="see" onClick={() => typeof edit == 'function' ? edit.call(this, record) :
+                    this.$router.push('./form/' + record.id)
+                  } />
+                }
+                {
+                  ( see || edit)  && del &&
+                  <a-divider type="vertical" />
+                }
+                { del && <a-popconfirm title="确定删除这条记录吗？" okText="确定" cancelText="取消" placement="right" on={{ confirm: this.deleteThis.bind(this, record.id) }}>
                   <a-icon type="delete" class="delete" />
                 </a-popconfirm>}
               </span>

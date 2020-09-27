@@ -9,7 +9,7 @@ import { formPageTypeEnum as pageTypeEnum } from '@/utils/enum';
 export interface formItem {
   type: 'input' | 'select' | 'number' | 'textarea' | 'date' | 'dateRange' | 'password' | 'file' | 'customer',   // 表单类型
   label: string,  // 表单的标题
-  name: string | any,  // 表单的name
+  name: string | [],  // 表单的name
   value: string | [] | Function,
   selectOptions?: Array<Object> | undefined | Function,
   selectOptionsCallback?: Function, // 如果selectOption是通过函数调用生成的，这个字段是selectOptions函数的回调函数
@@ -70,4 +70,8 @@ export interface listModel {
   deleteApi?: Function, // 删除某行数据的接口函数
   customCreateBtn?: any,  // 自定义创建按钮
   setParameter?: Function,  // 获取列表接口设置参数
+}
+
+export interface bfConfig {
+  dateFormat?: 'timeStamp' | 'longTimeStamp' | 'string'
 }

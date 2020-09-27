@@ -13,7 +13,7 @@
         "name": "全部"
       },
       "data": {
-        "api": "@get('/activity/getApproveList')",
+        "api": "@get('/user/list')",
         "deleteApi": "@get('/activity/delete')",
         "searchForm": [
           {
@@ -25,32 +25,50 @@
           {
             "type": "input",
             "label": "姓名",
-            "name": "roleName"
+            "name": "nickName"
+          },
+          {
+            "type": "dateRange",
+            "label": "生日",
+            "name": ["birthdayStart", "birthdayEnd"]
+          },
+          {
+            "type": "number",
+            "label": "年龄",
+            "name": "age"
           }
         ],
         "columns": [
           {
-            "title": "审批表单名称",
-            "dataIndex": "approveName",
-            "width": 150
+            "title": "用户id",
+            "dataIndex": "id"
           },
           {
-            "title": "审批流类型",
-            "dataIndex": "ifDelete",
-            "width": 150,
-            "customRender": "@ifDeleteRender"
+            "title": "用户名",
+            "dataIndex": "username"
           },
           {
-            "title": "审批流",
-            "dataIndex": "roleListFlow",
-            "customRender": "@roleListFlowRender"
+            "title": "所属角色",
+            "dataIndex": "roleName"
+          },
+          {
+            "title": "姓名",
+            "dataIndex": "nickName"
+          },
+          {
+            "title": "性别",
+            "dataIndex": "sex"
+          },
+          {
+            "title": "联系方式",
+            "dataIndex": "phone"
           },
           {
             "title": "操作",
             "scopedSlots": {
               "customRender": "action"
             },
-            "see": "@see",
+            "see": true,
             "del": true
           }
         ]
@@ -58,7 +76,7 @@
     },
     {
       "id": "form",
-      "name": "（创建表单审批流）",
+      "name": "用户信息",
       "type": "form",
       "data": {
         "createApi": "@post('/activity/deploy')",
@@ -67,36 +85,17 @@
         "deleteApi": "@get('/activity/delete')",
         "formOption": [
           {
-            "type": "select",
-            "value": "",
-            "label": "审批表单名称",
-            "name": "worksId",
-            "required": true,
-            "selectOptions": "@select('/activity/worksList', 'approveName', 'id')",
-            "selectOptionsCallback": "@worksIdSelectOptionsCallback",
-            "width": 8,
-            "supplyParam": [
-              {
-                "type": "select",
-                "name": "processId"
-              }
-            ],
-            "loading": true,
-            "disabled": [
-              "update"
-            ]
+            "type": "input",
+            "label": "用户名",
+            "name": "username",
+            "required": true
           },
           {
             "type": "select",
             "value": "",
             "label": "复制审核流程",
             "name": "copyFlow",
-            "selectOptions": "@select('/activity/getApproveList','activityId','id')",
-            "hide": [
-              "detail",
-              "update"
-            ],
-            "onChange": "@copyFlowOnChange"
+            "selectOptions": "@select('/activity/getApproveList','activityId','id')"
           },
           {
             "type": "customer",

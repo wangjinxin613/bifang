@@ -1,15 +1,14 @@
 import Mock from 'mockjs'
 
 // 模拟审批管理列表数据
-Mock.mock(/\/mock\/activity\/getApproveList/, 'get', {
+Mock.mock(/\/mock\/user\/list/, 'get', {
   'list|10': [{
     'id|+1': 0,
-    'approveName|+1': ['采购订单','采购合同', '订单验收'],
-    'activityId|+1': ['采购订单','采购合同', '订单验收'],
-    'roleListFlow': {
-      0: ['销售'],
-      1: ['财务', '总监']
-    }
+    'username': '@cname',
+    'roleName|+1': ['采购','风控', '业务员'],
+    'nickName': '@cname',
+    'sex|+1': ['男', '女'],
+    'phone': /^1[385][1-9]\d{8}/
   }],
   'pageSize': 1,
   'curPage': 1,
@@ -17,7 +16,7 @@ Mock.mock(/\/mock\/activity\/getApproveList/, 'get', {
 })
 
 // 获取权限列表
-Mock.mock(/\/mock\/user\/getRoleName/, 'get', {
+Mock.mock('/mock/user/getRoleName', 'get', {
   0: {
     'id|+1': 0,
     'roleName': '风控',

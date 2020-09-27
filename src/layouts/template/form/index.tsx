@@ -80,11 +80,11 @@ export default class extends tsx.Component<Vue> {
         this.btnLoading = true;
 
         // 字段赋值处理
-        this.formOption.forEach(async (current, index) => {
+        this.formOption.forEach(async (current: any, index) => {
           if (current.type == 'file' && current.value) {
 
           } else if (current.type == 'select' && current.supplyParam) {
-            current.supplyParam.forEach(item => {
+            current.supplyParam.forEach((item : any) => {
               if (item.type == 'select' && item.name && Array.isArray(current.selectOptions)) {
                 current.selectOptions.forEach((symbol: any) => {
                   if (symbol.value == fieldsValue[current.name]) {

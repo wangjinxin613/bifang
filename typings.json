@@ -1,5 +1,6 @@
 {
   "globalDependencies": {
-    "axios": "registry:dt/axios#0.9.1+20161016142654"
+    "axios": "registry:dt/axios#0.9.1+20161016142654",
+    "moment": "registry:dt/moment#2.11.1+20161010105546"
   }
 }
