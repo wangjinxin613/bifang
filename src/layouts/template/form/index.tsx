@@ -4,8 +4,26 @@ import '@/assets/style/formView.less';
 import { formItem, formModel } from '@/utils/interface'
 import { deepCopy } from '@/utils/util';
 import { formPageTypeEnum as pageTypeEnum } from '@/utils/enum';
+import { bfConfig } from '../../../core/compiler';
 
 @Component({
+  computed: {
+    formData: {
+      cache: false,
+      get (this: any) : any {
+        return this.formModel.getFieldsValue();
+      },
+      set(this: any, value) {
+        console.log('监听到赋值操作', value);
+        this.setFieldsValue(value);
+        try {
+          this.formModel.setFieldsValue(value);
+        } catch (error) {
+    
+        }
+      }
+    }
+  }
 })
 export default class extends tsx.Component<Vue> {
 
@@ -15,10 +33,14 @@ export default class extends tsx.Component<Vue> {
   public pageLoading: Boolean = false;  // 页面刷新状态
   public formOption: Array<formItem> = [];   // 表单配置项(也不一定是表单)
   public apiData!: Object; // detailApi调用成功的原始数据
-  public deleteBtnLoading : Boolean = false;
+  public deleteBtnLoading: Boolean = false;
 
   public get id() {
     return this.$route.params.id;
+  }
+
+  private get dateFormat() {
+    return bfConfig.dateFormat;
   }
 
   // 页面标题
@@ -44,7 +66,7 @@ export default class extends tsx.Component<Vue> {
   }
 
   // 详情页的字段值
-  public getTextItem(item: any) {
+  private getTextItem(item: any) {
     if (item.type === 'select' && Array.isArray(item.selectOptions)) {
       for (let i in item.selectOptions) {
         if (item.selectOptions[i].value == item.value) {
@@ -55,27 +77,26 @@ export default class extends tsx.Component<Vue> {
     return item.value;
   }
 
-  public get formData() {
-    return this.formModel.getFieldsValue();
-  }
-
-  public set formData(value) {
-    console.log('监听到赋值操作', value);
-    this.setFieldsValue(value);
-    try {
-      this.formModel.setFieldsValue(value);
-    } catch (error) {
-      
-    }
-  }
+  public formData : any;
 
   // 提交表单事件
   public submit() {
+    let item : any;
+    for( item of this.formOption) {
+      if(item.type == 'money' && item.required) {
+        if(this.formData[item.name] == null || this.formData[item.name] == '') {
+          item.help = '请输入' + item.label;
+          item.validateStatus = 'error';
+        } else {
+          item.help = '';
+          item.validateStatus = 'success';
+        }
+      }
+    }
     this.formModel.validateFields(async err => {
       if (!err) {
         var fieldsValue = this.formModel.getFieldsValue();
         const { content } = this;
-
         const hide = this.$message.loading('正在提交中，请稍后', 0);
         this.btnLoading = true;
 
@@ -84,7 +105,7 @@ export default class extends tsx.Component<Vue> {
           if (current.type == 'file' && current.value) {
 
           } else if (current.type == 'select' && current.supplyParam) {
-            current.supplyParam.forEach((item : any) => {
+            current.supplyParam.forEach((item: any) => {
               if (item.type == 'select' && item.name && Array.isArray(current.selectOptions)) {
                 current.selectOptions.forEach((symbol: any) => {
                   if (symbol.value == fieldsValue[current.name]) {
@@ -153,7 +174,6 @@ export default class extends tsx.Component<Vue> {
           this.btnLoading = false;
         }
       } else {
-        console.log(this.$notification);
         this.$notification['error']({
           message: '表单校验试验',
           description:
@@ -165,21 +185,21 @@ export default class extends tsx.Component<Vue> {
 
   // 删除表单事件
   public deleteThis() {
-    const { content } = this; 
+    const { content } = this;
     this.$confirm({
       title: '确定要删除这个表单吗？',
       content: '删除后无法撤销',
       okText: '确定',
       okType: 'danger',
       cancelText: '不了',
-      onOk:() => {
-        if(typeof content.deleteApi == 'function') {
+      onOk: () => {
+        if (typeof content.deleteApi == 'function') {
           const hide = this.$message.loading('正在删除中，请稍后...', 0);
           this.deleteBtnLoading = true;
           content.deleteApi({
             id: this.id
           }).then((res: any) => {
-            if(typeof content.deleteCallback == 'function') {
+            if (typeof content.deleteCallback == 'function') {
               content.deleteCallback(res);
             } else {
               this.$success({
@@ -239,13 +259,17 @@ export default class extends tsx.Component<Vue> {
     this.formModel.resetFields();
     // 重置文件类型
     this.formOption.forEach((current, index) => {
-       if (current.type == 'file' && current.value && current.value.length != 0) {
-          current.value = [];
-       }
+      if (current.type == 'file' && current.value && current.value.length != 0) {
+        current.value = [];
+      }
     });
-    if(typeof this.content.resetForm == 'function') {
+    if (typeof this.content.resetForm == 'function') {
       this.content.resetForm();
     }
+  }
+
+  private filterOption(input: any, option: any) {
+    return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0;
   }
 
 
@@ -298,8 +322,16 @@ export default class extends tsx.Component<Vue> {
                 <a-form layout="horizontal" form={this.formModel} >
                   <a-row gutter={60} style="width: 100%;">
                     {
-                      this.formOption.map((item, index) => {
+                      this.formOption.map((item: any, index) => {
                         var formItem;
+                        var disabled = Array.isArray(item.disabled) && item.disabled.indexOf(this.pageType) != -1 ? true : false;
+                        var inputOnChange = () => {
+                          this.$nextTick(() => {
+                            typeof item.onChange == 'function' &&
+                            item.onChange.call(this, this.formData[item.name], { key: index, formItem: item, formOption: this.formOption, event: event })
+                          })
+                        };
+                        var rules = [{ required: item.required, message: item.label + '不能为空!' }, ...(!item.validator ? [] : item.validator)];
                         // 输入框
                         if (item.type == 'input') {
                           formItem = <a-input
@@ -307,34 +339,40 @@ export default class extends tsx.Component<Vue> {
                             v-decorator={[
                               item.name,
                               {
-                                rules: [{ required: item.required, message: '请输入' + item.label + '!' }, ...(!item.validator ? [] : item.validator)],
+                                rules: rules,
                                 initialValue: typeof item.value == 'function' ? item.value(item, index, this.formOption) : item.value,
                                 validateTrigger: 'blur',
                                 validateFirst: true
                               }
                             ]}
-                            disabled={ Array.isArray(item.disabled) && item.disabled.indexOf(this.pageType) != -1 ? true : false}
+                            disabled={disabled}
                             name={item.name}
                             type={item.name}
-                          // prefix="item.isMoney ? (typeof item.prefix == 'undefined' ? '￥' : item.prefix) : item.prefix"
-                          // suffix="item.suffix"
-                          // min="item.isMoney ? 0 : item.min"
+                            allowClear
+                            prefix={item.prefix}
+                            suffix={item.suffix}
+                            onInput={inputOnChange}
                           ></a-input>
                         } else if (item.type == 'select') {
                           formItem = <a-select
                             placeholder="请选择"
-                            disabled={ Array.isArray(item.disabled) && item.disabled.indexOf(this.pageType) != -1 ? true : false}
-                            v-decorator={[item.name, { rules: [{ required: item.required, message: '请选择' + item.label + '!' }], initialValue: item.value }]}
+                            disabled={disabled}
+                            v-decorator={[item.name, { rules: rules} ]}
                             mode={item.mode}
-                            loading={ typeof item.selectOptions === 'function' ? true : false }
-                            onChange={ (value: any, option: any) => { typeof item.onChange == 'function' && item.onChange.call(this, value, { key: index, item: item, formOption: this.formOption, event: event, label: (event?.target as any).textContent }) }}
-                          // :filter-option="filterOption"
-                          // :show-search="item.showSearch"
+                            loading={typeof item.selectOptions === 'function' ? true : false}
+                            onChange={(value: any, option: any) => {
+                              typeof item.onChange == 'function' &&
+                                item.onChange.call(this, value, { key: index, formItem: item, formOption: this.formOption, event: event, label: (event?.target as any).textContent })
+                            }}
+                            allowClear
+                            suffixIcon={item.suffix}
+                            filter-option={typeof item.filterOption === 'function' ? item.filterOption : this.filterOption}
+                            show-search={item.showSearch}
                           >
                             {
                               Array.isArray(item.selectOptions) ?
                                 item.selectOptions?.map((symbol: any) => (
-                                  <a-select-option value={symbol.value}>{symbol.label}</a-select-option>
+                                  <a-select-option value={symbol.value} disabled={symbol.disabled}>{symbol.label}</a-select-option>
                                 )) : (typeof item.selectOptions === 'function') &&
                                 (() => {
                                   try {
@@ -342,7 +380,14 @@ export default class extends tsx.Component<Vue> {
                                       if (typeof item.selectOptionsCallback === 'function' && this.pageType != pageTypeEnum.create) {
                                         res = item.selectOptionsCallback(res, this.apiData);
                                       }
+                                      // 当选择器的mode是tags或者combobox时，value不能是数字，否则报错，需要强制转行成字符串
+                                      if (item.mode == 'tags' || item.mode == 'combobox') {
+                                        for (let i in res) {
+                                          res[i].value = String(res[i].value)
+                                        }
+                                      }
                                       item.selectOptions = res;
+                                      this.$forceUpdate();
                                     })
                                   } catch (error) {
                                     console.error("渲染选择框选项的过程中出现了问题", error);
@@ -357,30 +402,117 @@ export default class extends tsx.Component<Vue> {
                               v-decorator={[
                                 item.name,
                                 {
-                                  rules: [{ required: item.required, message: '请输入' + item.label + '!' }, ...(!item.validator ? [] : item.validator)],
+                                  rules: rules,
                                   initialValue: typeof item.value == 'function' ? item.value(item, index, this.formOption) : item.value,
                                   validateTrigger: 'blur',
                                   validateFirst: true
                                 }
                               ]}
-                              disabled={ Array.isArray(item.disabled) && item.disabled.indexOf(this.pageType) != -1 ? true : false}
+                              disabled={Array.isArray(item.disabled) && item.disabled.indexOf(this.pageType) != -1 ? true : false}
                               name={item.name}
-                            // onChange={typeof item.onChange == 'function' ? item.onChange.bind(this, item) : ''}
+                              onChange={inputOnChange}
+                              allowClear
                             />
                           )
+                        } else if (item.type == 'number' || item.type == 'money') {
+                          let formatter = typeof item.formatter == 'function' ? item.formatter : null;
+                          let parser = typeof item.parser == 'function' ? item.parser : (value: any )=> value;
+                          if(item.type == 'money') {
+                            formatter = (value: any) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                            parser = (value: any) => {
+                              return value.replace(/\$\s?|(,*)/g, '')
+                            };
+                          }
+                          formItem = (
+                            <a-input-number
+                              placeholder={'请输入' + item.label}
+                              v-decorator={[
+                                item.name,
+                                {
+                                  rules: item.type == 'money' ? [] : rules,
+                                  initialValue: typeof item.value == 'function' ? item.value(item, index, this.formOption) : item.value,
+                                  validateTrigger: 'blur',
+                                  validateFirst: true
+                                }
+                              ]}
+                              disabled={Array.isArray(item.disabled) && item.disabled.indexOf(this.pageType) != -1 ? true : false}
+                              name={item.name}
+                              onChange={() => {
+                                if(item.type == 'money' && item.required) {
+                                  if(this.formData[item.name] == null || this.formData[item.name] == '') {
+                                    item.help = '请输入' + item.label;
+                                    item.validateStatus = 'error';
+                                  } else {
+                                    item.help = '';
+                                    item.validateStatus = 'success';
+                                  }
+                                }
+                                inputOnChange();
+                              }}
+                              formatter={ formatter }
+                              parser={ parser }
+                              precision={item.precision}
+                              max={item.max}
+                              min={item.min}
+                              step={item.step}
+                              allowClear
+                            />
+                          )
+                        } else if(item.type == 'password') {
+                          formItem = <a-input-password
+                            placeholder={'请输入' + item.label}
+                            v-decorator={[
+                              item.name,
+                              {
+                                rules: rules,
+                                initialValue: typeof item.value == 'function' ? item.value(item, index, this.formOption) : item.value,
+                                validateTrigger: 'blur',
+                                validateFirst: true
+                              }
+                            ]}
+                            disabled={disabled}
+                            name={item.name}
+                            type={item.name}
+                            allowClear
+                            prefix={item.prefix}
+                            suffix={item.suffix}
+                            onInput={inputOnChange}
+                          ></a-input-password>
+                        } else if(item.type == 'date') {
+                          formItem = <a-date-picker 
+                            v-decorator={[
+                              item.name,
+                              {
+                                rules: rules,
+                                initialValue: typeof item.value == 'function' ? item.value(item, index, this.formOption) : item.value,
+                                validateTrigger: 'blur',
+                                validateFirst: true
+                              }
+                            ]}
+                            valueFormat={this.dateFormat == 'longTimeStamp' ? 'x' : this.dateFormat == 'string' ? 'yyyy-MM-DD' : 'X'} 
+                            onChange={() => {
+                              inputOnChange();
+                            }}
+                            disabled={disabled}
+                            name={item.name}
+                            type={item.name}
+                            allowClear
+                          />
                         }
-                        if(Array.isArray(item.hide) && item.hide.indexOf(this.pageType) != -1) {
+                        if (Array.isArray(item.hide) && item.hide.indexOf(this.pageType) != -1) {
                           return '';
                         }
-                        const textItem = <div class="textItem">{ typeof item.selectOptions == 'function' ? <a-icon type="loading" />: this.getTextItem(item)}</div>
+                        const textItem = <div class="textItem">{typeof item.selectOptions == 'function' ? <a-icon type="loading" /> : this.getTextItem(item)}</div>
                         if (item.type !== 'customer') {
                           return (
                             <a-col span={item.width ?? 8}>
                               <a-form-item
                                 label={item.label}
-                                required={item.required!}
-                                // extra="x"
+                                required={item.required}
+                                extra={item.extra}
                                 name={item.name}
+                                help={item.help}
+                                validateStatus={item.validateStatus}
                               >
                                 {this.pageType === pageTypeEnum.detail ? <div><div style="display:none">{formItem}</div>{textItem}</div> : formItem}
                               </a-form-item>
@@ -389,7 +521,7 @@ export default class extends tsx.Component<Vue> {
                         } else {
                           return (
                             <a-col span={24}>
-                              { typeof item.render == 'function' ? item.render() : item.render }
+                              {typeof item.render == 'function' ? item.render() : item.render}
                             </a-col>
                           )
                         }
@@ -399,7 +531,7 @@ export default class extends tsx.Component<Vue> {
                   {
                     this.pageType === pageTypeEnum.detail ? (
                       <div class="btns">
-                        <a-button type="danger" size="large" loading={ this.deleteBtnLoading } onClick={ this.deleteThis }>删除</a-button>
+                        <a-button type="danger" size="large" loading={this.deleteBtnLoading} onClick={this.deleteThis}>删除</a-button>
                         <router-link to={'../form/' + this.id}><a-button type="primary" style="margin-left: 20px;" size="large" >编辑</a-button></router-link>
                       </div>
                     ) : (

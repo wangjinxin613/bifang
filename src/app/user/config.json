@@ -88,29 +88,71 @@
             "type": "input",
             "label": "用户名",
             "name": "username",
-            "required": true
+            "required": true,
+            "validator": [
+              {
+                "validator": "@usernameRule"
+              }
+            ],
+            "onChange": "@change"
+          },
+          {
+            "type": "password",
+            "label": "密码",
+            "name": "password",
+            "required": true,
+            "onChange": "@change"
           },
           {
             "type": "select",
-            "value": "",
-            "label": "复制审核流程",
-            "name": "copyFlow",
-            "selectOptions": "@select('/activity/getApproveList','activityId','id')"
-          },
-          {
-            "type": "customer",
-            "value": "",
-            "name": "",
-            "label": "审批流设置",
-            "width": 8,
-            "render": "@customerRender"
+            "label": "所属角色",
+            "name": "roleName",
+            "required": true,
+            "selectOptions": "@select('/user/getRoleName','roleName','id')",
+            "mode": "default",
+            "showSearch": true,
+            "onChange": "@change"
           },
           {
             "type": "textarea",
             "value": "",
-            "label": "审批说明",
+            "label": "个性签名",
             "name": "describe",
-            "width": 18
+            "width": 10,
+            "onChange": "@change"
+          },
+          {
+            "type": "number",
+            "value": "",
+            "label": "年龄",
+            "name": "age",
+            "width": 8,
+            "onChange": "@change",
+            "max": 100,
+            "min": 0,
+            "precision": 0,
+            "step": 10,
+            "required": true
+          },
+          {
+            "type": "money",
+            "value": "",
+            "label": "月收入",
+            "name": "income",
+            "width": 8,
+            "onChange": "@change",
+            "max": 10000000,
+            "min": -10,
+            "precision": 2,
+            "step": 10,
+            "required": true
+          },
+          {
+            "type": "date",
+            "label": "出生日期",
+            "name": "birthday",
+            "required": true,
+            "onChange": "@change"
           }
         ]
       }

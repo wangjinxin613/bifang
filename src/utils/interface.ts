@@ -7,14 +7,13 @@ import { formPageTypeEnum as pageTypeEnum } from '@/utils/enum';
 
 // 表单的配置项
 export interface formItem {
-  type: 'input' | 'select' | 'number' | 'textarea' | 'date' | 'dateRange' | 'password' | 'file' | 'customer',   // 表单类型
+  type: 'input' | 'select' | 'number' | 'textarea' | 'date' | 'dateRange' | 'password' | 'file' | 'customer' | 'money',   // 表单类型
   label: string,  // 表单的标题
   name: string | [],  // 表单的name
   value: string | [] | Function,
   selectOptions?: Array<Object> | undefined | Function,
   selectOptionsCallback?: Function, // 如果selectOption是通过函数调用生成的，这个字段是selectOptions函数的回调函数
   required?: boolean, // 是否必填
-  extra?: string, // 下边额外的展示信息
   validator?: Object | any, // 自定义校验规则
   disabled?:  Array<pageTypeEnum>,
   readonly?: boolean,
@@ -24,7 +23,7 @@ export interface formItem {
   max?: number, // 最大值
   onChange?: any, // 表单change事件
   width?: number, // 栅栏宽度 1~24的整数，默认为8
-  mode?: string,  // select的mode
+  mode?: 'default' | 'multiple' | 'tags' | 'combobox',  // select的mode, 设置 Select 的模式为多选或标签
   render?: any,  // customer模式时的自定义render
   supplyParam?: [{  // 额外要上传数据的字段
     type?: string,
@@ -32,7 +31,16 @@ export interface formItem {
     selectOptions?: Array<any>
   }],
   hide?: Array<pageTypeEnum>, // 哪种页面类型要隐藏这个字段
-  loading?: Boolean  // 字段是否处于刷新中
+  loading?: Boolean,  // 字段是否处于刷新中
+  filterOption?: any, // 是否根据输入项进行筛选, select独有
+  showSearch?: Boolean, // 使单选模式可搜索
+  formatter?: Function | string,   // 指定输入框展示值的格式 number独有
+  parser?: Function | number,   // 指定从 formatter 里转换回数字的方式，和 formatter 搭配使用
+  precision?: number,  // 数据精度
+  step?: number | string, // 每次改变步数，可以为小数
+  validateStatus?: 'success' | 'warning' | 'error' | 'validating', // 校验状态，如不设置，则会根据校验规则自动生成
+  help?: any, // 提示信息，如不设置，则会根据校验规则自动生成
+  extra?: any, // 额外的提示信息，和 help 类似，当需要错误信息和提示文案同时出现时，可以使用这个
 }
 
 // 审批流设置的某一项
