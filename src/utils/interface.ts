@@ -41,6 +41,7 @@ export interface formItem {
   validateStatus?: 'success' | 'warning' | 'error' | 'validating', // 校验状态，如不设置，则会根据校验规则自动生成
   help?: any, // 提示信息，如不设置，则会根据校验规则自动生成
   extra?: any, // 额外的提示信息，和 help 类似，当需要错误信息和提示文案同时出现时，可以使用这个
+  validateTrigger?: 'change' | 'blur' | 'focus' // 校验规则触发条件
 }
 
 // 审批流设置的某一项
@@ -81,5 +82,6 @@ export interface listModel {
 }
 
 export interface bfConfig {
-  dateFormat?: 'timeStamp' | 'longTimeStamp' | 'string'
+  dateFormat?: 'timeStamp' | 'longTimeStamp' | 'string',
+  validateTrigger?: 'change' | 'blur' | 'focus'
 }

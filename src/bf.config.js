@@ -4,6 +4,8 @@ module.exports = {
    *  timeStamp(10位时间戳)、longTimeStamp(13位时间戳)、string(字符串，如2020-10-01)
    **/ 
   dateFormat: 'timeStamp', 
-
-  
+  /**
+   * 表单的验证规则触发条件
+   */
+  validateTrigger: 'change'
 }

@@ -102,8 +102,8 @@ export default class extends tsx.Component<Vue> {
 
         // 字段赋值处理
         this.formOption.forEach(async (current: any, index) => {
+        
           if (current.type == 'file' && current.value) {
-
           } else if (current.type == 'select' && current.supplyParam) {
             current.supplyParam.forEach((item: any) => {
               if (item.type == 'select' && item.name && Array.isArray(current.selectOptions)) {
@@ -116,11 +116,12 @@ export default class extends tsx.Component<Vue> {
                 });
               }
             });
-          } else if (current.type == 'dateRange') {
+          } else if (current.type == 'dateRange' && Array.isArray(current.name) && current.name.length == 2) {
             Object.assign(fieldsValue, {
-              [current.name[0]]: fieldsValue[current.name[0]][0].unix(),
-              [current.name[1]]: fieldsValue[current.name[0]][1].unix()
+              [current.name[0]]: fieldsValue[current.name[0]][0],
+              [current.name[1]]: fieldsValue[current.name[0]][1]
             });
+            console.log(fieldsValue);
           }
         })
 
@@ -332,6 +333,13 @@ export default class extends tsx.Component<Vue> {
                           })
                         };
                         var rules = [{ required: item.required, message: item.label + '不能为空!' }, ...(!item.validator ? [] : item.validator)];
+                        var validateTrigger = bfConfig.validateTrigger;
+                        if(typeof item.validateTrigger != 'undefined') {
+                          validateTrigger = item.validateTrigger;
+                        }
+                        if(typeof validateTrigger == 'undefined') {
+                          validateTrigger = 'change';
+                        }
                         // 输入框
                         if (item.type == 'input') {
                           formItem = <a-input
@@ -341,7 +349,7 @@ export default class extends tsx.Component<Vue> {
                               {
                                 rules: rules,
                                 initialValue: typeof item.value == 'function' ? item.value(item, index, this.formOption) : item.value,
-                                validateTrigger: 'blur',
+                                validateTrigger: validateTrigger,
                                 validateFirst: true
                               }
                             ]}
@@ -357,7 +365,7 @@ export default class extends tsx.Component<Vue> {
                           formItem = <a-select
                             placeholder="请选择"
                             disabled={disabled}
-                            v-decorator={[item.name, { rules: rules} ]}
+                            v-decorator={[item.name, { rules: rules, validateTrigger: validateTrigger} ]}
                             mode={item.mode}
                             loading={typeof item.selectOptions === 'function' ? true : false}
                             onChange={(value: any, option: any) => {
@@ -404,7 +412,7 @@ export default class extends tsx.Component<Vue> {
                                 {
                                   rules: rules,
                                   initialValue: typeof item.value == 'function' ? item.value(item, index, this.formOption) : item.value,
-                                  validateTrigger: 'blur',
+                                  validateTrigger: validateTrigger,
                                   validateFirst: true
                                 }
                               ]}
@@ -431,7 +439,7 @@ export default class extends tsx.Component<Vue> {
                                 {
                                   rules: item.type == 'money' ? [] : rules,
                                   initialValue: typeof item.value == 'function' ? item.value(item, index, this.formOption) : item.value,
-                                  validateTrigger: 'blur',
+                                  validateTrigger: validateTrigger,
                                   validateFirst: true
                                 }
                               ]}
@@ -466,7 +474,7 @@ export default class extends tsx.Component<Vue> {
                               {
                                 rules: rules,
                                 initialValue: typeof item.value == 'function' ? item.value(item, index, this.formOption) : item.value,
-                                validateTrigger: 'blur',
+                                validateTrigger: validateTrigger,
                                 validateFirst: true
                               }
                             ]}
@@ -485,7 +493,6 @@ export default class extends tsx.Component<Vue> {
                               {
                                 rules: rules,
                                 initialValue: typeof item.value == 'function' ? item.value(item, index, this.formOption) : item.value,
-                                validateTrigger: 'blur',
                                 validateFirst: true
                               }
                             ]}
@@ -495,6 +502,26 @@ export default class extends tsx.Component<Vue> {
                             }}
                             disabled={disabled}
                             name={item.name}
+                            type={item.name}
+                            allowClear
+                          />
+                        } else if(item.type == 'dateRange') {
+                          formItem = <a-range-picker 
+                            v-decorator={[
+                              Array.isArray(item.name) ? item.name[0] : item.name,
+                              {
+                                rules: rules,
+                                initialValue: typeof item.value == 'function' ? item.value(item, index, this.formOption) : item.value,
+                                validateFirst: true
+                              }
+                            ]}
+                            valueFormat={this.dateFormat == 'longTimeStamp' ? 'x' : this.dateFormat == 'string' ? 'yyyy-MM-DD' : 'X'} 
+                            onChange={
+                              typeof item.onChange == 'function' &&
+                            item.onChange.call(this, this.formData[ Array.isArray(item.name) ? item.name[0] : item.name ], { key: index, formItem: item, formOption: this.formOption, event: event })
+                            }
+                            disabled={disabled}
+                            name={ Array.isArray(item.name) ? item.name[0] : item.name}
                             type={item.name}
                             allowClear
                           />

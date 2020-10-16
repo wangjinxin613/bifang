@@ -88,7 +88,6 @@
             "type": "input",
             "label": "用户名",
             "name": "username",
-            "required": true,
             "validator": [
               {
                 "validator": "@usernameRule"
@@ -100,14 +99,12 @@
             "type": "password",
             "label": "密码",
             "name": "password",
-            "required": true,
             "onChange": "@change"
           },
           {
             "type": "select",
             "label": "所属角色",
             "name": "roleName",
-            "required": true,
             "selectOptions": "@select('/user/getRoleName','roleName','id')",
             "mode": "default",
             "showSearch": true,
@@ -131,8 +128,7 @@
             "max": 100,
             "min": 0,
             "precision": 0,
-            "step": 10,
-            "required": true
+            "step": 10
           },
           {
             "type": "money",
@@ -144,13 +140,18 @@
             "max": 10000000,
             "min": -10,
             "precision": 2,
-            "step": 10,
-            "required": true
+            "step": 10
           },
           {
             "type": "date",
             "label": "出生日期",
             "name": "birthday",
+            "onChange": "@change"
+          },
+          {
+            "type": "dateRange",
+            "label": "工作时间",
+            "name": ["workDateStart", "workDateEnd"],
             "required": true,
             "onChange": "@change"
           }
