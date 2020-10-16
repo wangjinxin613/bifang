@@ -319,7 +319,7 @@ export default class extends tsx.Component<Vue> {
           <div class="form">
             <a-skeleton loading={this.pageLoading} active>
               {
-                // !this.pageLoading &&
+                !this.pageLoading &&
                 <a-form layout="horizontal" form={this.formModel} >
                   <a-row gutter={60} style="width: 100%;">
                     {
@@ -341,7 +341,9 @@ export default class extends tsx.Component<Vue> {
                           validateTrigger = 'change';
                         }
                         // 输入框
-                        if (item.type == 'input') {
+                        if(Array.isArray(item.hide) && item.hide.indexOf(this.pageType) != -1) {
+                          formItem = <div></div>
+                        } else if (item.type == 'input') {
                           formItem = <a-input
                             placeholder={'请输入' + item.label}
                             v-decorator={[
@@ -384,6 +386,7 @@ export default class extends tsx.Component<Vue> {
                                 )) : (typeof item.selectOptions === 'function') &&
                                 (() => {
                                   try {
+                                    // 异步获取选择器的selectOptions
                                     item.selectOptions().then((res: any) => {
                                       if (typeof item.selectOptionsCallback === 'function' && this.pageType != pageTypeEnum.create) {
                                         res = item.selectOptionsCallback(res, this.apiData);
@@ -395,7 +398,10 @@ export default class extends tsx.Component<Vue> {
                                         }
                                       }
                                       item.selectOptions = res;
-                                      this.$forceUpdate();
+                                      // 当selectCallFunction在getCallback之后执行的话，需要对表单重新赋值
+                                      this.formModel.setFieldsValue({
+                                        [item.name]: item.value
+                                      })
                                     })
                                   } catch (error) {
                                     console.error("渲染选择框选项的过程中出现了问题", error);
